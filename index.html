@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="ar">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جدول العمل</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            position: relative;
+            transition: background-color 0.3s;
+            background-color: #FFFFFF;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            z-index: 1;
+        }
+
+        .shift-schedule,
+        .work-calendar {
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            background-color: #f9f9f9;
+        }
+
+        .calendar-control,
+        .schedule-setup {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+        }
+
+        .schedule-setup label,
+        .calendar-control label {
+            margin-left: 10px;
+        }
+
+        #calendar {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .month {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-top: 20px;
+            padding: 10px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+            background-color: #f9f9f9;
+        }
+
+        .day,
+        .day-header {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+      
+        .day-header:nth-child(7), /* الجمعة */
+        .day-header:nth-child(8)  /* السبت */ {
+        color: green;
+        }
+      
+     
+      #stats-table {
+    background-color: #A5B9A6;
+        }
+
+        .day-header {
+            font-weight: bold;
+            background-color: #f0f0f0;
+        }
+
+        .work-day {
+            background-color: #b3e6cc;
+            border: 2px solid #000;
+        }
+
+        .month-title {
+            grid-column: span 7;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .day-off {
+            background-color: #ffffff;
+        }
+
+        #scroll-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .today {
+            border: 2px solid red;
+        }
+
+        .schedule-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        .schedule-item select,
+        .schedule-item input {
+            margin-left: 10px;
+        }
+
+        .remove-item {
+            margin-left: 10px;
+            color: red;
+            cursor: pointer;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .stats-table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            text-align: center;
+        }
+
+        .stats-table th,
+        .stats-table td {
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+
+        .stats-table th {
+            background-color: #f0f0f0;
+        }
+
+        .color-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            margin: 5px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .color-button:hover {
+            transform: scale(1.1);
+        }
+
+        #toggle-stats {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            position: fixed;
+            right: 20px;
+            top: 60px;
+        }
+
+        #toggle-stats:hover {
+            background-color: #0056b3;
+        }
+
+        .highlight {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="shift-schedule">
+            <div id="current-date"></div>
+            <h2>جدول العمل</h2>
+            <div id="schedule-items">
+                <div class="schedule-item">
+                    <select class="day-type">
+                        <option value="work">أيام العمل</option>
+                        <option value="off">أيام العطلة</option>
+                    </select>
+                    <input type="number" class="days-count" value="1" min="1" max="99">
+                    <input type="color" class="day-color" value="#68f296">
+                    <span class="remove-item">X</span>
+                </div>
+                <div class="schedule-item">
+                    <select class="day-type">
+                        <option value="work">أيام العمل</option>
+                        <option value="off" selected>أيام العطلة</option>
+                    </select>
+                    <input type="number" class="days-count" value="3" min="1" max="99">
+                    <input type="color" class="day-color" value="#e1f7e9">
+                    <span class="remove-item">X</span>
+                </div>
+            </div>
+            <button id="add-schedule-item">إضافة</button>
+        </div>
+        <div class="calendar-control">
+            <label for="start-date">تاريخ اول يوم عمل:</label>
+            <input type="date" id="start-date">
+            <button id="generate-schedule">إنشاء الجدول</button>
+        </div>
+        <!-- أزرار تغيير خلفية الصفحة -->
+        <div class="color-buttons">
+            <button class="color-button" style="background-color: #323836;" data-color="#323836"></button>
+            <button class="color-button" style="background-color: #FFFFFF;" data-color="#FFFFFF"></button>
+        </div>
+
+        <!-- زر لإخفاء أو إظهار جدول الإحصائيات -->
+        <button id="toggle-stats">إخفاء/إظهار جدول الإحصائيات</button>
+
+        <!-- جدول الإحصائيات -->
+        <table class="stats-table" id="stats-table">
+            <thead>
+                <tr>
+                    <th>الشهر</th>
+                    <th>السنة</th>
+                    <th>عدد أيام العمل</th>
+                    <th>عدد أيام العطلة</th>
+                    <th>الألوان المستخدمة لأيام العمل </th>
+                    <th>الألوان المستخدمة لأيام العطلة</th>
+                </tr>
+            </thead>
+            <tbody id="stats-body">
+                <!-- المحتوى سيتم إنشاؤه ديناميكيًا -->
+            </tbody>
+        </table>
+
+        <div class="work-calendar">
+            <h2>تقويم العمل</h2>
+            <div id="calendar"></div>
+        </div>
+
+        <footer>
+            <p>سبحان الله بحمده سبحان الله العظيم</p>
+            <p>لا تنسى ذكر الله</p>
+            <p>Editor, Ai عمر الوهيبي </p>
+        </footer>
+    </div>
+
+    <!-- زر التمرير لأعلى -->
+    <button id="scroll-to-top">التمرير لأعلى</button>
+
+    <script>
+        document.getElementById('add-schedule-item').addEventListener('click', function () {
+            const scheduleItems = document.getElementById('schedule-items');
+            const newItem = document.createElement('div');
+            newItem.className = 'schedule-item';
+            newItem.innerHTML = `
+                <select class="day-type">
+                    <option value="work">أيام العمل</option>
+                    <option value="off">أيام العطلة</option>
+                </select>
+                <input type="number" class="days-count" value="1" min="1" max="99">
+                <input type="color" class="day-color" value="#FFFFFF">
+                <span class="remove-item">X</span>
+            `;
+            newItem.querySelector('.remove-item').addEventListener('click', function () {
+                newItem.remove();
+            });
+            scheduleItems.appendChild(newItem);
+        });
+
+        document.querySelectorAll('.remove-item').forEach(item => {
+            item.addEventListener('click', function () {
+                item.parentElement.remove();
+            });
+        });
+
+function generateCalendar(startDate, schedule, numberOfMonths = 12) {
+    const calendar = document.getElementById('calendar');
+    const statsBody = document.getElementById('stats-body');
+    calendar.innerHTML = '';
+    statsBody.innerHTML = '';
+    const startDateObj = new Date(startDate);
+    const today = new Date();
+    let currentDate = new Date(startDate);
+    currentDate.setMonth(currentDate.getMonth() - numberOfMonths / 12);
+    let dayCount = 0;
+    let totalDaysInSchedule = schedule.reduce((sum, item) => sum + parseInt(item.daysCount), 0);
+    let isFirstWorkDayMonthSet = false;
+
+    const stats = {};
+
+    function getDayType(dayIndex) {
+        let tempCount = 0;
+        for (const item of schedule) {
+            tempCount += parseInt(item.daysCount);
+            if (dayIndex < tempCount) {
+                return item;
+            }
+        }
+        return schedule[0]; // Default to the first item if not found
+    }
+
+    for (let month = 0; month < numberOfMonths; month++) {
+        const monthDiv = document.createElement('div');
+        monthDiv.className = 'month';
+
+        const monthTitle = document.createElement('div');
+        monthTitle.className = 'month-title';
+        const monthNames = ['يناير', 'فبراير', 'مارس', 'إبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+        monthTitle.textContent = monthNames[currentDate.getMonth()] + ' ' + currentDate.getFullYear();
+
+        // تحقق إذا كانت هذه هي أول فترة عمل لتلوين العنوان
+        if (!isFirstWorkDayMonthSet && currentDate >= startDateObj) {
+            monthTitle.classList.add('highlight');
+            isFirstWorkDayMonthSet = true;
+        }
+
+        monthDiv.appendChild(monthTitle);
+
+        const dayHeaders = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+        dayHeaders.forEach(day => {
+            const dayHeader = document.createElement('div');
+            dayHeader.className = 'day-header';
+            dayHeader.textContent = day;
+            monthDiv.appendChild(dayHeader);
+        });
+
+        const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+        const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+        const startDay = firstDayOfMonth.getDay();
+
+        for (let i = 0; i < startDay; i++) {
+            const emptyDiv = document.createElement('div');
+            emptyDiv.className = 'day';
+            monthDiv.appendChild(emptyDiv);
+        }
+
+        let workDaysCount = 0;
+        let offDaysCount = 0;
+        let workColors = {};
+        let offColors = {};
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dayDiv = document.createElement('div');
+            dayDiv.className = 'day';
+            const fullDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+
+            let diffDays = Math.floor((fullDate - startDateObj) / (1000 * 60 * 60 * 24)) + 1;
+            if (fullDate < startDateObj) {
+                diffDays = (diffDays % totalDaysInSchedule + totalDaysInSchedule) % totalDaysInSchedule;
+            } else {
+                diffDays = diffDays % totalDaysInSchedule;
+            }
+
+            const dayType = getDayType(diffDays);
+
+            if (dayType.dayType === 'work') {
+                dayDiv.classList.add('work-day');
+                dayDiv.style.backgroundColor = dayType.dayColor;
+                workDaysCount++;
+                workColors[dayType.dayColor] = (workColors[dayType.dayColor] || 0) + 1;
+            } else {
+                dayDiv.classList.add('day-off');
+                dayDiv.style.backgroundColor = dayType.dayColor;
+                offDaysCount++;
+                offColors[dayType.dayColor] = (offColors[dayType.dayColor] || 0) + 1;
+            }
+
+            if (
+                fullDate.getFullYear() === today.getFullYear() &&
+                fullDate.getMonth() === today.getMonth() &&
+                fullDate.getDate() === today.getDate()
+            ) {
+                dayDiv.classList.add('today');
+            }
+
+            dayDiv.textContent = day;
+            monthDiv.appendChild(dayDiv);
+
+            dayCount++;
+        }
+
+        calendar.appendChild(monthDiv);
+        currentDate.setMonth(currentDate.getMonth() + 1);
+
+        // Adding monthly statistics
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${monthNames[(currentDate.getMonth() - 1 + 12) % 12]}</td>
+            <td>${currentDate.getFullYear()}</td>
+            <td>${workDaysCount}</td>
+            <td>${offDaysCount}</td>
+            <td>${Object.entries(workColors).map(([color, count]) => `<span style="background-color:${color}; padding: 2px 5px;">${count}</span>`).join(' ')}</td>
+            <td>${Object.entries(offColors).map(([color, count]) => `<span style="background-color:${color}; padding: 2px 5px;">${count}</span>`).join(' ')}</td>
+        `;
+        statsBody.appendChild(row);
+    }
+}
+
+
+        document.getElementById('generate-schedule').addEventListener('click', function () {
+            const startDate = document.getElementById('start-date').value;
+            const scheduleItems = document.querySelectorAll('.schedule-item');
+            const schedule = [];
+
+            scheduleItems.forEach(item => {
+                const dayType = item.querySelector('.day-type').value;
+                const daysCount = item.querySelector('.days-count').value;
+                const dayColor = item.querySelector('.day-color').value;
+                schedule.push({ dayType, daysCount, dayColor });
+            });
+
+            generateCalendar(startDate, schedule);
+        });
+
+        // تغيير لون خلفية الصفحة بناءً على اللون الذي يتم اختياره
+        const colorButtons = document.querySelectorAll('.color-button');
+        colorButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                document.body.style.backgroundColor = button.getAttribute('data-color');
+            });
+        });
+
+        // إظهار أو إخفاء جدول الإحصائيات عند الضغط على الزر
+        const toggleStatsButton = document.getElementById('toggle-stats');
+        const statsTable = document.getElementById('stats-table');
+        toggleStatsButton.addEventListener('click', () => {
+            if (statsTable.style.display === 'none' || statsTable.style.display === '') {
+                statsTable.style.display = 'table';
+            } else {
+                statsTable.style.display = 'none';
+            }
+        });
+
+        // زر التمرير لأعلى
+        const scrollToTopButton = document.getElementById('scroll-to-top');
+        scrollToTopButton.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // تحديث التاريخ الحالي كل ثانية
+        function updateCurrentDate() {
+            const now = new Date();
+            const formattedDate = now.toLocaleDateString('ar-MA', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            document.getElementById('current-date').textContent = formattedDate;
+        }
+        setInterval(updateCurrentDate, 1000);
+    </script>
+</body>
+
+</html>
