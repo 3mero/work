@@ -79,8 +79,8 @@
             border-radius: 4px;
         }
 
-        .day-header:nth-child(7), /* الجمعة */
-        .day-header:nth-child(8)  /* السبت */ {
+        .day-header:nth-child(8), /* الجمعة */
+        .day-header:nth-child(9)  /* السبت */ {
         color: green;
         }
 
@@ -214,28 +214,14 @@
                 width: 100%; /* تجعل العرض مرناً ليتناسب مع الجهاز */
                 height: auto; /* تجعل الارتفاع مرناً ليتناسب مع الجهاز */
             }
-            <style>
-        /* تخصيص مظهر زر الواتساب */
-        .whatsapp-link {
-            display: inline-flex;
-            align-items: center;
-            text-decoration: none;
-            color: inherit;
-            font-size: 16px; /* حجم الخط */
-        }
+        .month-number {
+          font-size: 0.8em;
+          color: #666;
+          text-align: center;
+          margin-bottom: 5px;
+          font-weight: bold;
+             }
 
-        .whatsapp-icon {
-            width: 10px; /* حجم الأيقونة */
-            height: 60px; /* حجم الأيقونة */
-            margin-left: 5px; /* مسافة صغيرة بين النص والأيقونة */
-        }
-
-        .name-container {
-            display: flex;
-            align-items: center;
-            font-size: 16px; /* حجم الخط */
-        }
-        
         }
     </style>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.5/dist/html2canvas.min.js" async></script>
@@ -243,7 +229,6 @@
 </head>
 
 <body>
-
     <div class="container">
         <div class="shift-schedule">
             <div id="current-date"></div>
@@ -320,16 +305,12 @@
             <h2>تقويم العمل</h2>
             <div id="calendar"></div>
         </div>
-  
-<footer>
-    <p>سبحان الله بحمده سبحان الله العظيم</p>
-    <p>لا تنسى ذكر الله</p>
-    <p>Editor by Omar K H + GPT-4o . 
-        <a href="https://wa.me/96892670679" target="_blank">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" style="width: 20px; height: 20px; vertical-align: middle;">
-        </a>
-    </p>
-</footer>
+
+        <footer>
+            <p>سبحان الله بحمده سبحان الله العظيم</p>
+            <p>لا تنسى ذكر الله</p>
+            <p>Editor by Omar K H & OpenAi</p>
+        </footer>
    
     <script>
         document.getElementById('add-schedule-item').addEventListener('click', function () {
@@ -364,7 +345,7 @@ function generateCalendar(startDate, schedule, numberOfMonths = 12) {
     statsBody.innerHTML = '';
     const startDateObj = new Date(startDate);
     const today = new Date();
-    let currentDate = new Date(startDate); // تغيير هذه السطر لبدء من الشهر المحدد مباشرةً
+    let currentDate = new Date(startDate);
     let dayCount = 0;
     let totalDaysInSchedule = schedule.reduce((sum, item) => sum + parseInt(item.daysCount), 0);
     let isFirstWorkDayMonthSet = false;
@@ -391,12 +372,17 @@ function generateCalendar(startDate, schedule, numberOfMonths = 12) {
         const monthNames = ['يناير', 'فبراير', 'مارس', 'إبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
         monthTitle.textContent = monthNames[currentDate.getMonth()] + ' ' + currentDate.getFullYear();
 
+        const monthNumber = document.createElement('div');
+        monthNumber.className = 'month-number';
+        monthNumber.textContent = 'شهر ' + (currentDate.getMonth() + 1);
+
         // تحقق إذا كانت هذه هي أول فترة عمل لتلوين العنوان
         if (!isFirstWorkDayMonthSet && currentDate >= startDateObj) {
             monthTitle.classList.add('highlight');
             isFirstWorkDayMonthSet = true;
         }
 
+        monthDiv.appendChild(monthNumber);
         monthDiv.appendChild(monthTitle);
 
         const dayHeaders = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
@@ -513,6 +499,7 @@ function generateCalendar(startDate, schedule, numberOfMonths = 12) {
                 statsTable.style.display = 'none';
             }
         });
+
 
         // تحديث التاريخ الحالي كل ثانية
         function updateCurrentDate() {
