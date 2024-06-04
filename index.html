@@ -106,18 +106,6 @@
             background-color: #ffffff;
         }
 
-        #scroll-to-top {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 10px;
-            background-color: #C70039;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
         .today {
             border: 2px solid red;
         }
@@ -343,9 +331,6 @@
     </p>
 </footer>
    
-    <!-- زر التمرير لأعلى -->
-    <button id="scroll-to-top">التمرير لأعلى</button>
-
     <script>
         document.getElementById('add-schedule-item').addEventListener('click', function () {
             const scheduleItems = document.getElementById('schedule-items');
@@ -527,12 +512,6 @@ function generateCalendar(startDate, schedule, numberOfMonths = 12) {
             } else {
                 statsTable.style.display = 'none';
             }
-        });
-
-        // زر التمرير لأعلى
-        const scrollToTopButton = document.getElementById('scroll-to-top');
-        scrollToTopButton.addEventListener('click', () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
         // تحديث التاريخ الحالي كل ثانية
