@@ -328,6 +328,34 @@
     .note-item .note-actions button {
         margin-left: 10px;
     }
+   
+       #generate-schedule {
+        background-color: red;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    #generate-schedule:hover {
+        background-color: darkred;
+    }
+
+    #export-data, #import-data {
+        background-color: darkgreen;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    #export-data:hover, #import-data:hover {
+        background-color: forestgreen;
+    }
     </style>
   
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.5/dist/html2canvas.min.js" async></script>
@@ -344,7 +372,7 @@
         <div id="notes-list">
             <div class="note-header">
                 <div class="note-title">اسم الشهر والسنة</div>
-                <div class="note-start-date">تاريخ البدء</div>
+                <div class="note-start-date">تاريخ البدء للجداول</div>
                 <div class="note-save-time">وقت الحفظ</div>
                 <div class="note-creation-time">تاريخ إنشاء الملاحظة</div>
                 <div class="note-text">النص</div>
