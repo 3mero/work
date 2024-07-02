@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>جدول العمل</title>
- <style>
+    <style>
         body {
             font-family: Arial, sans-serif;
             display: flex;
@@ -20,13 +20,11 @@
             transition: background-color 0.3s;
             background-color: #FFFFFF;
         }
-
         .container {
             width: 100%;
             max-width: 1200px;
             z-index: 1;
         }
-
         .shift-schedule,
         .work-calendar {
             margin: 20px 0;
@@ -36,7 +34,6 @@
             text-align: center;
             background-color: #f2f2f2;
         }
-
         .calendar-control,
         .schedule-setup {
             display: flex;
@@ -44,19 +41,16 @@
             justify-content: center;
             margin: 10px 0;
         }
-
         .schedule-setup label,
         .calendar-control label {
             margin-left: 10px;
         }
-
         #calendar {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 20px;
             justify-content: center;
         }
-
         .month {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -67,7 +61,6 @@
             background-color: #f2f2f2;
             position: relative;
         }
-
         .day,
         .day-header {
             width: 40px;
@@ -79,54 +72,44 @@
             border-radius: 4px;
             position: relative;
         }
-
         .day-header:nth-child(10),
         .day-header:nth-child(11) {
             color: green;
         }
-
         .day-header {
             font-weight: bold;
             background-color: #C3C3C3;
         }
-
         .work-day {
             background-color: #b3e6cc;
             border: 2px solid #000;
         }
-
         .month-title {
             grid-column: span 7;
             text-align: center;
             font-weight: bold;
             margin-bottom: 10px;
         }
-
         .day-off {
             background-color: #ffffff;
         }
-
         .today {
             border: 2px solid red;
         }
-
         .schedule-item {
             display: flex;
             align-items: center;
             margin: 10px 0;
         }
-
         .schedule-item select,
         .schedule-item input {
             margin-left: 10px;
         }
-
         .remove-item {
             margin-left: 10px;
             color: red;
             cursor: pointer;
         }
-
         button {
             background-color: #4CAF50;
             color: white;
@@ -136,24 +119,20 @@
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
-
         button:hover {
             background-color: #45a049;
         }
-
         .stats-table {
             width: 80%;
             margin-top: 20px;
             border-collapse: collapse;
             text-align: center;
         }
-
         .stats-table th,
         .stats-table td {
             border: 2px solid #ccc;
             padding: 3px;
         }
-
         .color-button {
             width: 40px;
             height: 40px;
@@ -163,11 +142,9 @@
             cursor: pointer;
             transition: transform 0.2s;
         }
-
         .color-button:hover {
             transform: scale(1.1);
         }
-
         #toggle-stats {
             background-color: #73BF3E;
             color: white;
@@ -177,11 +154,9 @@
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
-
         .highlight {
             color: red;
         }
-
         .month-tools {
             position: absolute;
             top: 5px;
@@ -189,7 +164,6 @@
             z-index: 10;
             display: flex;
         }
-
         .month-tools button {
             background: none;
             border: none;
@@ -198,7 +172,6 @@
             padding: 0;
             margin: 0 5px;
         }
-
         .notes-dropdown {
             position: absolute;
             top: 30px;
@@ -212,23 +185,19 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             width: 250px;
         }
-
         .notes-dropdown textarea {
             width: 100%;
             margin-bottom: 10px;
             resize: vertical;
         }
-
         .notes-dropdown button {
             margin-right: 5px;
         }
-
         #calendar-bg-color {
             position: absolute;
             top: 5px;
             right: 5px;
         }
-
         .pin {
             position: absolute;
             top: 2px;
@@ -238,24 +207,20 @@
             display: none;
             transform: translate(50%, -50%);
         }
-
         @media (max-width: 1200px) {
             #calendar {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
-
         @media (max-width: 768px) {
             #calendar {
                 grid-template-columns: 1fr;
             }
-
             .day,
             .day-header {
                 width: 100%;
                 height: auto;
             }
-
             .month-number {
                 font-size: 0.8em;
                 color: #666;
@@ -264,7 +229,6 @@
                 font-weight: bold;
             }
         }
-
         /* مظهر صفحة جميع الملاحظات */
         #all-notes-modal {
             position: fixed;
@@ -278,7 +242,6 @@
             align-items: center;
             z-index: 1000;
         }
-
         #all-notes-content {
             background: #fff;
             padding: 20px;
@@ -288,100 +251,95 @@
             max-height: 80%;
             overflow-y: auto;
         }
-   
-       .note-header, .note-item {
-        display: grid;
-        grid-template-columns: 2fr 1fr 1fr 1fr 3fr;
-        gap: 10px;
-        align-items: center;
-    }
-   
-       .note-header {
-        font-weight: bold;
-        border-bottom: 2px solid #ccc;
-        margin-bottom: 10px;
-    }
-
+        .note-header, .note-item {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 3fr;
+            gap: 10px;
+            align-items: center;
+        }
+        .note-header {
+            font-weight: bold;
+            border-bottom: 2px solid #ccc;
+            margin-bottom: 10px;
+        }
         .note-item {
             border-bottom: 1px solid #ccc;
             padding: 10px;
         }
-   
-       .note-item {
-        border-bottom: 1px solid #ccc;
-        padding: 10px 0;
-    }
-
-    .note-item:last-child {
-        border-bottom: none;
-    }
-
-    .note-item textarea {
-        width: 100%;
-        resize: vertical;
-    }
-   
-    .note-item .note-actions {
-        text-align: right;
-    }
-
-    .note-item .note-actions button {
-        margin-left: 10px;
-    }
-   
-       #generate-schedule {
-        background-color: red;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-
-    #generate-schedule:hover {
-        background-color: darkred;
-    }
-
-    #export-data, #import-data {
-        background-color: darkgreen;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-
-    #export-data:hover, #import-data:hover {
-        background-color: forestgreen;
-    }
+        .note-item:last-child {
+            border-bottom: none;
+        }
+        .note-item textarea {
+            width: 100%;
+            resize: vertical;
+        }
+        .note-item .note-actions {
+            text-align: right;
+        }
+        .note-item .note-actions button {
+            margin-left: 10px;
+        }
+        #generate-schedule {
+            background-color: red;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        #generate-schedule:hover {
+            background-color: darkred;
+        }
+        #export-data, #import-data {
+            background-color: darkgreen;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        #export-data:hover, #import-data:hover {
+            background-color: forestgreen;
+        }
+        /* صندوق أحمر للموظف وتاريخ البدء */
+        .employee-info {
+            background-color: red;
+            color: white;
+            padding: 10px;
+            margin-top: 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
     </style>
-  
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.5/dist/html2canvas.min.js" async></script>
 </head>
 <body>
-<div>
-      <button id="import-data">استيراد</button>
-    <button id="export-data">تصدير جميع المحفوظات</button>
-      <button id="show-all-notes">📝✏️عرض جميع الملاحظات المحفوظ</button>
-</div>
-<div id="all-notes-modal" style="display: none;">
-    <div id="all-notes-content">
-        <h3>جميع الملاحظات</h3>
-        <div id="notes-list">
-            <div class="note-header">
-                <div class="note-title">اسم الشهر والسنة</div>
-                <div class="note-start-date">تاريخ البدء للجداول</div>
-                <div class="note-save-time">وقت الحفظ</div>
-                <div class="note-creation-time">تاريخ إنشاء الملاحظة</div>
-                <div class="note-text">النص</div>
-            </div>
-        </div>
-        <button id="close-notes">❌إغلاق</button>
+    <div>
+        <button id="import-data">استيراد</button>
+        <button id="export-data">تصدير جميع المحفوظات</button>
+        <button id="show-all-notes">📝✏️عرض جميع الملاحظات المحفوظ</button>
     </div>
-</div>
-
+    <div id="employee-info" class="employee-info" style="display: none;">
+        <p id="employee-name"></p>
+        <p id="employee-start-date"></p>
+    </div>
+    <div id="all-notes-modal" style="display: none;">
+        <div id="all-notes-content">
+            <h3>جميع الملاحظات</h3>
+            <div id="notes-list">
+                <div class="note-header">
+                    <div class="note-title">اسم الشهر والسنة</div>
+                    <div class="note-start-date">تاريخ البدء للجداول</div>
+                    <div class="note-save-time">وقت الحفظ</div>
+                    <div class="note-creation-time">تاريخ إنشاء الملاحظة</div>
+                    <div class="note-text">النص</div>
+                </div>
+            </div>
+            <button id="close-notes">❌إغلاق</button>
+        </div>
+    </div>
     <div class="shift-schedule">
         <div id="current-date"></div>
         <h2>جدول العمل</h2>
@@ -403,7 +361,6 @@
                 <input type="color" class="day-color" value="#68f296">
                 <span class="remove-item">X</span>
             </div>
-              
             <div class="schedule-item">
                 <select class="day-type">
                     <option value="work">أيام العمل</option>
@@ -785,42 +742,41 @@
             localStorage.setItem('workSchedule', JSON.stringify(scheduleData));
         }
 
-function saveNotes() {
-    const notes = [];
-    document.querySelectorAll('.month').forEach((monthDiv, index) => {
-        const notesTextarea = monthDiv.querySelector('.notes-dropdown textarea');
-        notes.push(notesTextarea.value);
+        function saveNotes() {
+            const notes = [];
+            document.querySelectorAll('.month').forEach((monthDiv, index) => {
+                const notesTextarea = monthDiv.querySelector('.notes-dropdown textarea');
+                notes.push(notesTextarea.value);
 
-        // تغيير الرمز التعبيري بناءً على وجود ملاحظة
-        const editNotesButton = monthDiv.querySelector('.edit-notes');
-        if (notesTextarea.value.trim()) {
-            editNotesButton.textContent = '📝';
-        } else {
-            editNotesButton.textContent = '✏️';
+                // تغيير الرمز التعبيري بناءً على وجود ملاحظة
+                const editNotesButton = monthDiv.querySelector('.edit-notes');
+                if (notesTextarea.value.trim()) {
+                    editNotesButton.textContent = '📝';
+                } else {
+                    editNotesButton.textContent = '✏️';
+                }
+            });
+            localStorage.setItem('notes', JSON.stringify(notes));
         }
-    });
-    localStorage.setItem('notes', JSON.stringify(notes));
-}
 
-function loadNotesFromLocal() {
-    const savedNotes = localStorage.getItem('notes');
-    if (savedNotes) {
-        const notes = JSON.parse(savedNotes);
-        document.querySelectorAll('.month').forEach((monthDiv, index) => {
-            const notesTextarea = monthDiv.querySelector('.notes-dropdown textarea');
-            notesTextarea.value = notes[index] || '';
+        function loadNotesFromLocal() {
+            const savedNotes = localStorage.getItem('notes');
+            if (savedNotes) {
+                const notes = JSON.parse(savedNotes);
+                document.querySelectorAll('.month').forEach((monthDiv, index) => {
+                    const notesTextarea = monthDiv.querySelector('.notes-dropdown textarea');
+                    notesTextarea.value = notes[index] || '';
 
-            // تغيير الرمز التعبيري بناءً على وجود ملاحظة
-            const editNotesButton = monthDiv.querySelector('.edit-notes');
-            if (notesTextarea.value.trim()) {
-                editNotesButton.textContent = '📝';
-            } else {
-                editNotesButton.textContent = '✏️';
+                    // تغيير الرمز التعبيري بناءً على وجود ملاحظة
+                    const editNotesButton = monthDiv.querySelector('.edit-notes');
+                    if (notesTextarea.value.trim()) {
+                        editNotesButton.textContent = '📝';
+                    } else {
+                        editNotesButton.textContent = '✏️';
+                    }
+                });
             }
-        });
-    }
-}
-
+        }
 
         document.getElementById('shift-schedule-bg').addEventListener('input', function() {
             document.querySelector('.shift-schedule').style.backgroundColor = this.value;
@@ -983,171 +939,175 @@ function loadNotesFromLocal() {
             localStorage.clear();
             location.reload();
         });
-      
-      document.getElementById('export-data').addEventListener('click', function () {
-    const employeeName = prompt('أدخل اسم الموظف:');
-    if (!employeeName) return;
 
-    const startDate = document.getElementById('start-date').value;
-    const schedule = JSON.parse(localStorage.getItem('workSchedule')) || {};
-    const notes = JSON.parse(localStorage.getItem('notes')) || [];
-    const pins = JSON.parse(localStorage.getItem('pinnedDays')) || [];
-    const backgrounds = JSON.parse(localStorage.getItem('backgroundSettings')) || {};
+        document.getElementById('export-data').addEventListener('click', function () {
+            const employeeName = prompt('أدخل اسم الموظف:');
+            if (!employeeName) return;
 
-    const data = {
-        employeeName: employeeName,
-        startDate: startDate,
-        schedule: schedule,
-        notes: notes,
-        pins: pins,
-        backgrounds: backgrounds
-    };
+            const startDate = document.getElementById('start-date').value;
+            const schedule = JSON.parse(localStorage.getItem('workSchedule')) || {};
+            const notes = JSON.parse(localStorage.getItem('notes')) || [];
+            const pins = JSON.parse(localStorage.getItem('pinnedDays')) || [];
+            const backgrounds = JSON.parse(localStorage.getItem('backgroundSettings')) || {};
 
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `schedule_${employeeName}_${startDate}.json`;
-    link.click();
-    URL.revokeObjectURL(url);
-});
-
-      document.getElementById('import-data').addEventListener('click', function () {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'application/json';
-    input.addEventListener('change', function (event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                const data = JSON.parse(e.target.result);
-                localStorage.setItem('workSchedule', JSON.stringify(data.schedule));
-                localStorage.setItem('notes', JSON.stringify(data.notes));
-                localStorage.setItem('pinnedDays', JSON.stringify(data.pins));
-                localStorage.setItem('backgroundSettings', JSON.stringify(data.backgrounds));
-                document.getElementById('start-date').value = data.startDate;
-                loadScheduleFromLocal();
-                loadNotesFromLocal();
-                loadPinsFromLocal();
-                alert('تم استيراد البيانات بنجاح');
+            const data = {
+                employeeName: employeeName,
+                startDate: startDate,
+                schedule: schedule,
+                notes: notes,
+                pins: pins,
+                backgrounds: backgrounds
             };
-            reader.readAsText(file);
-        }
-    });
-    input.click();
-});
-      
-document.getElementById('show-all-notes').addEventListener('click', function () {
-    const notesList = document.getElementById('notes-list');
-    notesList.innerHTML = `
-        <div class="note-header">
-            <div class="note-title">اسم الشهر والسنة</div>
-            <div class="note-start-date">تاريخ البدء</div>
-            <div class="note-save-time">وقت الحفظ</div>
-            <div class="note-creation-time">تاريخ إنشاء الملاحظة</div>
-            <div class="note-text">النص</div>
-        </div>
-    `;
 
-    const savedNotes = JSON.parse(localStorage.getItem('notes')) || [];
-    const savedNoteTimestamps = JSON.parse(localStorage.getItem('noteTimestamps')) || [];
-    const months = document.querySelectorAll('.month-title');
-    const startDate = document.getElementById('start-date').value;
-    const monthNames = ['يناير', 'فبراير', 'مارس', 'إبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `schedule_${employeeName}_${startDate}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+        });
 
-    savedNotes.forEach((note, index) => {
-        if (note.trim()) {
-            const month = months[index].textContent;
-            const noteTimestamp = savedNoteTimestamps[index] || new Date().toLocaleString('ar-MA');
+        document.getElementById('import-data').addEventListener('click', function () {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'application/json';
+            input.addEventListener('change', function (event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const data = JSON.parse(e.target.result);
+                        localStorage.setItem('workSchedule', JSON.stringify(data.schedule));
+                        localStorage.setItem('notes', JSON.stringify(data.notes));
+                        localStorage.setItem('pinnedDays', JSON.stringify(data.pins));
+                        localStorage.setItem('backgroundSettings', JSON.stringify(data.backgrounds));
+                        document.getElementById('start-date').value = data.startDate;
+                        loadScheduleFromLocal();
+                        loadNotesFromLocal();
+                        loadPinsFromLocal();
 
-            const noteItem = document.createElement('div');
-            noteItem.className = 'note-item';
-            noteItem.innerHTML = `
-                <div>${month}</div>
-                <div>${startDate}</div>
-                <div>${noteTimestamp.split(' ')[1]}</div>
-                <div>${noteTimestamp.split(' ')[0]}</div>
-                <textarea>${note}</textarea>
-                <div class="note-actions">
-                    <button class="save-note">حفظ</button>
-                    <button class="delete-note">حذف</button>
+                        // عرض المعلومات في الصندوق الأحمر
+                        document.getElementById('employee-name').textContent = `اسم الموظف: ${data.employeeName}`;
+                        document.getElementById('employee-start-date').textContent = `تاريخ البدء: ${data.startDate}`;
+                        document.getElementById('employee-info').style.display = 'block';
+
+                        alert('تم استيراد البيانات بنجاح');
+                    };
+                    reader.readAsText(file);
+                }
+            });
+            input.click();
+        });
+
+        document.getElementById('show-all-notes').addEventListener('click', function () {
+            const notesList = document.getElementById('notes-list');
+            notesList.innerHTML = `
+                <div class="note-header">
+                    <div class="note-title">اسم الشهر والسنة</div>
+                    <div class="note-start-date">تاريخ البدء</div>
+                    <div class="note-save-time">وقت الحفظ</div>
+                    <div class="note-creation-time">تاريخ إنشاء الملاحظة</div>
+                    <div class="note-text">النص</div>
                 </div>
             `;
 
-            noteItem.querySelector('.save-note').addEventListener('click', function () {
-                savedNotes[index] = noteItem.querySelector('textarea').value;
-                savedNoteTimestamps[index] = new Date().toLocaleString('ar-MA');
-                localStorage.setItem('notes', JSON.stringify(savedNotes));
-                localStorage.setItem('noteTimestamps', JSON.stringify(savedNoteTimestamps));
-                alert('تم حفظ الملاحظة');
-            });
+            const savedNotes = JSON.parse(localStorage.getItem('notes')) || [];
+            const savedNoteTimestamps = JSON.parse(localStorage.getItem('noteTimestamps')) || [];
+            const months = document.querySelectorAll('.month-title');
+            const startDate = document.getElementById('start-date').value;
+            const monthNames = ['يناير', 'فبراير', 'مارس', 'إبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
 
-            noteItem.querySelector('.delete-note').addEventListener('click', function () {
-                if (confirm('هل أنت متأكد من حذف هذه الملاحظة؟')) {
-                    savedNotes[index] = '';
-                    savedNoteTimestamps[index] = '';
-                    localStorage.setItem('notes', JSON.stringify(savedNotes));
-                    localStorage.setItem('noteTimestamps', JSON.stringify(savedNoteTimestamps));
-                    noteItem.remove();
-                    alert('تم حذف الملاحظة');
+            savedNotes.forEach((note, index) => {
+                if (note.trim()) {
+                    const month = months[index].textContent;
+                    const noteTimestamp = savedNoteTimestamps[index] || new Date().toLocaleString('ar-MA');
+
+                    const noteItem = document.createElement('div');
+                    noteItem.className = 'note-item';
+                    noteItem.innerHTML = `
+                        <div>${month}</div>
+                        <div>${startDate}</div>
+                        <div>${noteTimestamp.split(' ')[1]}</div>
+                        <div>${noteTimestamp.split(' ')[0]}</div>
+                        <textarea>${note}</textarea>
+                        <div class="note-actions">
+                            <button class="save-note">حفظ</button>
+                            <button class="delete-note">حذف</button>
+                        </div>
+                    `;
+
+                    noteItem.querySelector('.save-note').addEventListener('click', function () {
+                        savedNotes[index] = noteItem.querySelector('textarea').value;
+                        savedNoteTimestamps[index] = new Date().toLocaleString('ar-MA');
+                        localStorage.setItem('notes', JSON.stringify(savedNotes));
+                        localStorage.setItem('noteTimestamps', JSON.stringify(savedNoteTimestamps));
+                        alert('تم حفظ الملاحظة');
+                    });
+
+                    noteItem.querySelector('.delete-note').addEventListener('click', function () {
+                        if (confirm('هل أنت متأكد من حذف هذه الملاحظة؟')) {
+                            savedNotes[index] = '';
+                            savedNoteTimestamps[index] = '';
+                            localStorage.setItem('notes', JSON.stringify(savedNotes));
+                            localStorage.setItem('noteTimestamps', JSON.stringify(savedNoteTimestamps));
+                            noteItem.remove();
+                            alert('تم حذف الملاحظة');
+                        }
+                    });
+
+                    notesList.appendChild(noteItem);
                 }
             });
 
-            notesList.appendChild(noteItem);
-        }
-    });
-
-    document.getElementById('all-notes-modal').style.display = 'flex';
-});
-
-document.getElementById('close-notes').addEventListener('click', function () {
-    document.getElementById('all-notes-modal').style.display = 'none';
-});
-
-function saveNotes() {
-    const notes = [];
-    const noteTimestamps = [];
-    document.querySelectorAll('.month').forEach((monthDiv, index) => {
-        const notesTextarea = monthDiv.querySelector('.notes-dropdown textarea');
-        notes.push(notesTextarea.value);
-
-        // تغيير الرمز التعبيري بناءً على وجود ملاحظة
-        const editNotesButton = monthDiv.querySelector('.edit-notes');
-        if (notesTextarea.value.trim()) {
-            editNotesButton.textContent = '📝';
-            noteTimestamps[index] = new Date().toLocaleString('ar-MA');
-        } else {
-            editNotesButton.textContent = '✏️';
-            noteTimestamps[index] = '';
-        }
-    });
-    localStorage.setItem('notes', JSON.stringify(notes));
-    localStorage.setItem('noteTimestamps', JSON.stringify(noteTimestamps));
-}
-
-function loadNotesFromLocal() {
-    const savedNotes = localStorage.getItem('notes');
-    const savedNoteTimestamps = localStorage.getItem('noteTimestamps');
-    if (savedNotes) {
-        const notes = JSON.parse(savedNotes);
-        const noteTimestamps = JSON.parse(savedNoteTimestamps);
-        document.querySelectorAll('.month').forEach((monthDiv, index) => {
-            const notesTextarea = monthDiv.querySelector('.notes-dropdown textarea');
-            notesTextarea.value = notes[index] || '';
-
-            // تغيير الرمز التعبيري بناءً على وجود ملاحظة
-            const editNotesButton = monthDiv.querySelector('.edit-notes');
-            if (notesTextarea.value.trim()) {
-                editNotesButton.textContent = '📝';
-            } else {
-                editNotesButton.textContent = '✏️';
-            }
+            document.getElementById('all-notes-modal').style.display = 'flex';
         });
-    }
-}
 
+        document.getElementById('close-notes').addEventListener('click', function () {
+            document.getElementById('all-notes-modal').style.display = 'none';
+        });
 
+        function saveNotes() {
+            const notes = [];
+            const noteTimestamps = [];
+            document.querySelectorAll('.month').forEach((monthDiv, index) => {
+                const notesTextarea = monthDiv.querySelector('.notes-dropdown textarea');
+                notes.push(notesTextarea.value);
+
+                // تغيير الرمز التعبيري بناءً على وجود ملاحظة
+                const editNotesButton = monthDiv.querySelector('.edit-notes');
+                if (notesTextarea.value.trim()) {
+                    editNotesButton.textContent = '📝';
+                    noteTimestamps[index] = new Date().toLocaleString('ar-MA');
+                } else {
+                    editNotesButton.textContent = '✏️';
+                    noteTimestamps[index] = '';
+                }
+            });
+            localStorage.setItem('notes', JSON.stringify(notes));
+            localStorage.setItem('noteTimestamps', JSON.stringify(noteTimestamps));
+        }
+
+        function loadNotesFromLocal() {
+            const savedNotes = localStorage.getItem('notes');
+            const savedNoteTimestamps = localStorage.getItem('noteTimestamps');
+            if (savedNotes) {
+                const notes = JSON.parse(savedNotes);
+                const noteTimestamps = JSON.parse(savedNoteTimestamps);
+                document.querySelectorAll('.month').forEach((monthDiv, index) => {
+                    const notesTextarea = monthDiv.querySelector('.notes-dropdown textarea');
+                    notesTextarea.value = notes[index] || '';
+
+                    // تغيير الرمز التعبيري بناءً على وجود ملاحظة
+                    const editNotesButton = monthDiv.querySelector('.edit-notes');
+                    if (notesTextarea.value.trim()) {
+                        editNotesButton.textContent = '📝';
+                    } else {
+                        editNotesButton.textContent = '✏️';
+                    }
+                });
+            }
+        }
     </script>
 </body>
 </html>
