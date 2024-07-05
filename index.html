@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>جدول العمل</title>
     <style>
-        body {
+        body, .shift-schedule, .work-calendar, #stats-table {
             font-family: Arial, sans-serif;
             display: flex;
             flex-direction: column;
@@ -861,6 +861,26 @@ function loadScheduleFromLocal() {
     if (savedSchedule) {
         const scheduleData = JSON.parse(savedSchedule);
         document.getElementById('start-date').value = scheduleData.startDate;
+      }
+
+    if (savedBackgroundSettings) {
+        loadBackgroundSettings();
+    } else {
+        // إذا لم تكن هناك إعدادات خلفية محفوظة، قم بتعيين كل شيء إلى الأبيض
+        document.querySelector('.work-calendar').style.backgroundColor = defaultWhite;
+        document.getElementById('work-calendar-bg').value = defaultWhite;
+
+        document.getElementById('stats-table').style.backgroundColor = defaultWhite;
+        document.getElementById('stats-table-bg').value = defaultWhite;
+
+        document.body.style.backgroundColor = defaultWhite;
+        document.getElementById('page-bg').value = defaultWhite;
+
+        document.querySelector('.shift-schedule').style.backgroundColor = defaultWhite;
+        document.getElementById('shift-schedule-bg').value = defaultWhite;
+
+        saveBackgroundSettings();
+    }
 
         const scheduleItemsContainer = document.getElementById('schedule-items');
         scheduleItemsContainer.innerHTML = '';
@@ -936,6 +956,7 @@ window.addEventListener('load', function() {
     loadScheduleFromLocal();
     updateCurrentDate();
     loadEmployeeInfo();
+    loadBackgroundSettings();
 });
 
         function savePinsToLocal() {
@@ -1289,21 +1310,39 @@ function loadEmployeeInfo() {
 }
       
       
-      function loadBackgroundSettings() {
+function loadBackgroundSettings() {
     const savedBackgroundSettings = localStorage.getItem('backgroundSettings');
+    const defaultWhite = '#FFFFFF';
+    
     if (savedBackgroundSettings) {
         const backgroundSettings = JSON.parse(savedBackgroundSettings);
-        document.querySelector('.work-calendar').style.backgroundColor = backgroundSettings.workCalendarBg || '#FFFFFF';
-        document.getElementById('work-calendar-bg').value = backgroundSettings.workCalendarBg || '#FFFFFF';
+        document.querySelector('.work-calendar').style.backgroundColor = backgroundSettings.workCalendarBg || defaultWhite;
+        document.getElementById('work-calendar-bg').value = backgroundSettings.workCalendarBg || defaultWhite;
 
-        document.getElementById('stats-table').style.backgroundColor = backgroundSettings.statsTableBg || '#FFFFFF';
-        document.getElementById('stats-table-bg').value = backgroundSettings.statsTableBg || '#FFFFFF';
+        document.getElementById('stats-table').style.backgroundColor = backgroundSettings.statsTableBg || defaultWhite;
+        document.getElementById('stats-table-bg').value = backgroundSettings.statsTableBg || defaultWhite;
 
-        document.body.style.backgroundColor = backgroundSettings.pageBg || '#FFFFFF';
-        document.getElementById('page-bg').value = backgroundSettings.pageBg || '#FFFFFF';
+        document.body.style.backgroundColor = backgroundSettings.pageBg || defaultWhite;
+        document.getElementById('page-bg').value = backgroundSettings.pageBg || defaultWhite;
 
-        document.querySelector('.shift-schedule').style.backgroundColor = backgroundSettings.shiftScheduleBg || '#FFFFFF';
-        document.getElementById('shift-schedule-bg').value = backgroundSettings.shiftScheduleBg || '#FFFFFF';
+        document.querySelector('.shift-schedule').style.backgroundColor = backgroundSettings.shiftScheduleBg || defaultWhite;
+        document.getElementById('shift-schedule-bg').value = backgroundSettings.shiftScheduleBg || defaultWhite;
+    } else {
+        // إذا لم تكن هناك إعدادات محفوظة، قم بتعيين كل شيء إلى الأبيض
+        document.querySelector('.work-calendar').style.backgroundColor = defaultWhite;
+        document.getElementById('work-calendar-bg').value = defaultWhite;
+
+        document.getElementById('stats-table').style.backgroundColor = defaultWhite;
+        document.getElementById('stats-table-bg').value = defaultWhite;
+
+        document.body.style.backgroundColor = defaultWhite;
+        document.getElementById('page-bg').value = defaultWhite;
+
+        document.querySelector('.shift-schedule').style.backgroundColor = defaultWhite;
+        document.getElementById('shift-schedule-bg').value = defaultWhite;
+
+        // حفظ الإعدادات الافتراضية
+        saveBackgroundSettings();
     }
 }
 
