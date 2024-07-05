@@ -32,7 +32,7 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             text-align: center;
-            background-color: #f2f2f2;
+            background-color: #FFFFFF;
         }
         .calendar-control,
         .schedule-setup {
@@ -58,7 +58,7 @@
             margin-top: 20px;
             padding: 10px;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-            background-color: #f2f2f2;
+            background-color: #FFFFFF;
             position: relative;
         }
         .day,
@@ -81,7 +81,7 @@
             background-color: #C3C3C3;
         }
         .work-day {
-            background-color: #b3e6cc;
+            background-color: #FFFFFF;
             border: 2px solid #000;
         }
         .month-title {
@@ -91,7 +91,7 @@
             margin-bottom: 10px;
         }
         .day-off {
-            background-color: #ffffff;
+            background-color: #FFFFFF;
         }
         .today {
             border: 2px solid red;
@@ -127,6 +127,7 @@
             margin-top: 20px;
             border-collapse: collapse;
             text-align: center;
+            background-color: #FFFFFF;
         }
         .stats-table th,
         .stats-table td {
@@ -536,11 +537,11 @@
                 monthDiv.appendChild(monthTitle);
 
                 const monthTools = document.createElement('div');
-                monthTools.className = 'month-tools';
                 monthTools.innerHTML = `
                     <button class="edit-notes">✏️</button>
                     <input type="color" class="change-bg" title="تغيير لون خلفية الشهر">
                 `;
+                monthTools.className = 'month-tools';
                 monthDiv.appendChild(monthTools);
 
                 const notesDropdown = document.createElement('div');
@@ -623,8 +624,6 @@
                         pin.style.display = pin.style.display === 'none' ? 'block' : 'none';
                         savePinsToLocal();
                         loadPinsFromLocal();
-                        loadBackgroundSettings();
-                      
                     });
 
                     monthDiv.appendChild(dayDiv);
@@ -922,14 +921,7 @@ function loadScheduleFromLocal() {
 
     loadPinsFromLocal();
     loadNotesFromLocal();
-  
-  const currentSave = localStorage.getItem('currentSave');
-    if (currentSave) {
-        loadEmployeeInfo();
-    }
 }
-
-
 
         // استدعاء الدالة عند تحميل الصفحة
 window.addEventListener('load', function() {
@@ -1216,17 +1208,6 @@ function addNewSave() {
         alert('الرجاء إدخال اسم للحفظ');
         return;
     }
-  
-  function updateSave(saveName) {
-    if (confirm(`هل أنت متأكد من رغبتك في تحديث المحفوظ: ${saveName}؟`)) {
-        const currentData = getCurrentData();
-        const saves = JSON.parse(localStorage.getItem('allSaves')) || {};
-        saves[saveName] = currentData;
-        localStorage.setItem('allSaves', JSON.stringify(saves));
-        alert(`تم تحديث المحفوظ: ${saveName} بنجاح`);
-    }
-}
- 
 
     const currentData = getCurrentData();
     const saves = JSON.parse(localStorage.getItem('allSaves')) || {};
