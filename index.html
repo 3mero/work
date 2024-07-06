@@ -878,6 +878,7 @@ function generateCalendar(startDate, schedule, numberOfMonths = 12) {
     loadPinsFromLocal(); // تحميل الدبابيس عند إنشاء الجداول
     loadNotesFromLocal(); // تحميل الملاحظات عند إنشاء الجداول
     loadMonthBackgrounds(); // تحميل الخلفيات عند إنشاء الجداول
+  
 }
 
 
@@ -898,6 +899,8 @@ function generateCalendar(startDate, schedule, numberOfMonths = 12) {
             saveBackgroundSettings();
             saveNotes();
             loadNotesFromLocal();
+            applyMonthBackgrounds();
+    
         });
 
         const toggleStatsButton = document.getElementById('toggle-stats');
@@ -984,21 +987,23 @@ function saveScheduleToLocal() {
         schedule.push({ dayType, daysCount, dayColor });
     });
 
-    // حفظ خلفيات الأشهر
     const monthBackgrounds = {};
     document.querySelectorAll('.month').forEach(monthDiv => {
         const monthTitle = monthDiv.querySelector('.month-title').textContent;
-        monthBackgrounds[monthTitle] = monthDiv.style.backgroundColor;
+        monthBackgrounds[monthTitle] = monthDiv.style.backgroundColor || '#FFFFFF';
     });
 
     const scheduleData = {
         startDate: startDate,
         schedule: schedule,
-        monthBackgrounds: monthBackgrounds
+        monthBackgrounds: monthBackgrounds,
+        employeeName: document.getElementById('employee-name').textContent.split(': ')[1],
+        employeeStartDate: document.getElementById('employee-start-date').textContent.split(': ')[1]
     };
 
     localStorage.setItem('workSchedule', JSON.stringify(scheduleData));
 }
+
 
         function saveBackgroundSettings() {
             const workCalendarBg = document.getElementById('work-calendar-bg-color-picker').value;
@@ -1092,11 +1097,6 @@ function loadNotesFromLocal() {
 
 function loadScheduleFromLocal() {
     const savedSchedule = localStorage.getItem('workSchedule');
-    const savedBackgroundSettings = localStorage.getItem('backgroundSettings');
-
-    // تعيين اللون الأبيض كلون افتراضي
-    const defaultWhite = '#FFFFFF';
-
     if (savedSchedule) {
         const scheduleData = JSON.parse(savedSchedule);
         document.getElementById('start-date').value = scheduleData.startDate;
@@ -1127,36 +1127,28 @@ function loadScheduleFromLocal() {
         generateCalendar(scheduleData.startDate, scheduleData.schedule);
         loadPinsFromLocal();
 
-        // استرجاع خلفيات الأشهر
-        document.querySelectorAll('.month').forEach(monthDiv => {
-            const monthTitle = monthDiv.querySelector('.month-title').textContent;
-            monthDiv.style.backgroundColor = scheduleData.monthBackgrounds[monthTitle] || defaultWhite;
-        });
-    }
+        if (scheduleData.monthBackgrounds) {
+            document.querySelectorAll('.month').forEach(monthDiv => {
+                const monthTitle = monthDiv.querySelector('.month-title').textContent;
+                if (scheduleData.monthBackgrounds[monthTitle]) {
+                    monthDiv.style.backgroundColor = scheduleData.monthBackgrounds[monthTitle];
+                }
+            });
+        }
 
-    if (savedBackgroundSettings) {
-        const backgroundSettings = JSON.parse(savedBackgroundSettings);
-        document.querySelector('.work-calendar').style.backgroundColor = backgroundSettings.workCalendarBg || '#FFFFFF';
-        document.getElementById('work-calendar-bg-color-picker').value = backgroundSettings.workCalendarBg || '#FFFFFF';
-
-        document.getElementById('stats-table').style.backgroundColor = backgroundSettings.statsTableBg || '#FFFFFF';
-        document.getElementById('stats-table-bg-color-picker').value = backgroundSettings.statsTableBg || '#FFFFFF';
-
-        document.body.style.backgroundColor = backgroundSettings.pageBg || '#FFFFFF';
-        document.getElementById('page-bg-color-picker').value = backgroundSettings.pageBg || '#FFFFFF';
-
-        document.querySelector('.shift-schedule').style.backgroundColor = backgroundSettings.shiftScheduleBg || '#FFFFFF';
-        document.getElementById('shift-schedule-bg-color-picker').value = backgroundSettings.shiftScheduleBg || '#FFFFFF';
+        if (scheduleData.employeeName && scheduleData.employeeStartDate) {
+            document.getElementById('employee-name').textContent = `اسم الموظف: ${scheduleData.employeeName}`;
+            document.getElementById('employee-start-date').textContent = `تاريخ البدء: ${scheduleData.employeeStartDate}`;
+            document.getElementById('employee-info').style.display = 'block';
+        }
     }
 }
 
 window.addEventListener('load', function() {
-    if (!localStorage.getItem('backgroundSettings')) {
-        resetBackgrounds(); // ضبط الخلفيات البيضاء عند أول تحميل للصفحة
-    } else {
-        loadBackgroundSettings();
-        applyBackgroundSettings();
-    }
+    loadScheduleFromLocal();
+    loadBackgroundSettings();
+    loadNotesFromLocal();
+    loadPinsFromLocal();
 });
 
 
@@ -1438,6 +1430,20 @@ function applyBackgroundSettings() {
 });
 
 
+      function applyMonthBackgrounds() {
+    const savedSchedule = localStorage.getItem('workSchedule');
+    if (savedSchedule) {
+        const scheduleData = JSON.parse(savedSchedule);
+        if (scheduleData.monthBackgrounds) {
+            document.querySelectorAll('.month').forEach(monthDiv => {
+                const monthTitle = monthDiv.querySelector('.month-title').textContent;
+                if (scheduleData.monthBackgrounds[monthTitle]) {
+                    monthDiv.style.backgroundColor = scheduleData.monthBackgrounds[monthTitle];
+                }
+            });
+        }
+    }
+}
 
     </script>
 </body>
