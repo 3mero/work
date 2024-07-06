@@ -510,6 +510,10 @@
       #bg-settings-modal {
     display: none;
         }
+      #delete-all-notes:hover {
+    background-color: #e53935;
+}
+
       
     </style>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.5/dist/html2canvas.min.js" async></script>
@@ -539,6 +543,7 @@
             <button id="close-notes">❌إغلاق</button>
             <button id="change-bg-color">تغيير لون الخلفية</button>
             <input type="color" id="color-picker">
+          <button id="delete-all-notes" style="background-color: #f44336; color: white; padding: 10px; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease;">حذف جميع الملاحظات</button>
         </div>
     </div>
     <div class="shift-schedule">
@@ -1413,6 +1418,25 @@ function applyBackgroundSettings() {
 
     saveBackgroundSettings();
 }
+      
+      document.getElementById('delete-all-notes').addEventListener('click', function () {
+    if (confirm('هل أنت متأكد من حذف جميع الملاحظات؟')) {
+        localStorage.removeItem('notes');
+        localStorage.removeItem('noteTimestamps');
+        document.getElementById('notes-list').innerHTML = `
+            <div class="note-header">
+                <div class="note-title">اسم الشهر والسنة</div>
+                <div class="note-start-date">تاريخ البدء</div>
+                <div class="note-save-time">وقت الحفظ</div>
+                <div class="note-creation-time">تاريخ إنشاء الملاحظة</div>
+                <div class="note-text">النص</div>
+            </div>
+        `;
+        alert('تم حذف جميع الملاحظات');
+        updatePageSize();
+    }
+});
+
 
 
     </script>
