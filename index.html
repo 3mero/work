@@ -691,20 +691,19 @@ function generateCalendar(startDate, schedule, numberOfMonths = 12) {
     const today = new Date();
     let currentDate = new Date(startDate);
     let dayCount = 0;
-    let totalDaysInSchedule = schedule.reduce((sum, item) => sum + parseInt(item.daysCount), 0);
+    const totalDaysInSchedule = schedule.reduce((sum, item) => sum + parseInt(item.daysCount), 0);
     let isFirstWorkDayMonthSet = false;
 
     const stats = {};
 
+    const cumulativeDays = [0];
+    for (const item of schedule) {
+        cumulativeDays.push(cumulativeDays[cumulativeDays.length - 1] + parseInt(item.daysCount));
+    }
+
     function getDayType(dayIndex) {
-        let tempCount = 0;
-        for (const item of schedule) {
-            tempCount += parseInt(item.daysCount);
-            if (dayIndex < tempCount) {
-                return item;
-            }
-        }
-        return schedule[0];
+        const index = cumulativeDays.findIndex(days => dayIndex < days) - 1;
+        return schedule[index];
     }
 
     for (let month = 0; month < numberOfMonths; month++) {
@@ -714,11 +713,13 @@ function generateCalendar(startDate, schedule, numberOfMonths = 12) {
         const monthTitle = document.createElement('div');
         monthTitle.className = 'month-title';
         const monthNames = ['يناير', 'فبراير', 'مارس', 'إبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
-        monthTitle.textContent = monthNames[currentDate.getMonth()] + ' ' + currentDate.getFullYear();
+        const monthIndex = (startDateObj.getMonth() + month) % 12;
+        const year = startDateObj.getFullYear() + Math.floor((startDateObj.getMonth() + month) / 12);
+        monthTitle.textContent = monthNames[monthIndex] + ' ' + year;
 
         const monthNumber = document.createElement('div');
         monthNumber.className = 'month-number';
-        monthNumber.textContent = 'شهر ' + (currentDate.getMonth() + 1);
+        monthNumber.textContent = 'شهر ' + (monthIndex + 1);
 
         if (!isFirstWorkDayMonthSet && currentDate >= startDateObj) {
             monthTitle.classList.add('highlight');
@@ -756,8 +757,8 @@ function generateCalendar(startDate, schedule, numberOfMonths = 12) {
             monthDiv.appendChild(dayHeader);
         });
 
-        const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-        const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+        const firstDayOfMonth = new Date(year, monthIndex, 1);
+        const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
         const startDay = firstDayOfMonth.getDay();
 
         for (let i = 0; i < startDay; i++) {
@@ -768,21 +769,17 @@ function generateCalendar(startDate, schedule, numberOfMonths = 12) {
 
         let workDaysCount = 0;
         let offDaysCount = 0;
-        let workColors = {};
-        let offColors = {};
+        const workColors = {};
+        const offColors = {};
 
         for (let day = 1; day <= daysInMonth; day++) {
             const dayDiv = document.createElement('div');
             dayDiv.className = 'day';
             dayDiv.id = `day-${month}-${day}`;
-            const fullDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+            const fullDate = new Date(year, monthIndex, day);
 
-            let diffDays = Math.floor((fullDate - startDateObj) / (1000 * 60 * 60 * 24)) + 1;
-            if (fullDate < startDateObj) {
-                diffDays = (diffDays % totalDaysInSchedule + totalDaysInSchedule) % totalDaysInSchedule;
-            } else {
-                diffDays = diffDays % totalDaysInSchedule;
-            }
+            let diffDays = Math.floor((fullDate - startDateObj) / (1000 * 60 * 60 * 24));
+            diffDays = ((diffDays + 1) % totalDaysInSchedule + totalDaysInSchedule) % totalDaysInSchedule;
 
             const dayType = getDayType(diffDays);
 
@@ -826,13 +823,12 @@ function generateCalendar(startDate, schedule, numberOfMonths = 12) {
         }
 
         calendar.appendChild(monthDiv);
-        currentDate.setMonth(currentDate.getMonth() + 1);
-        currentDate.setDate(1); // تعيين اليوم الأول من الشهر التالي لتجنب مشكلة اختفاء الأشهر
+        currentDate = new Date(year, monthIndex + 1, 1);
 
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${monthNames[(currentDate.getMonth() - 1 + 12) % 12]}</td>
-            <td>${currentDate.getFullYear()}</td>
+            <td>${monthNames[monthIndex]}</td>
+            <td>${year}</td>
             <td>${workDaysCount}</td>
             <td>${offDaysCount}</td>
             <td>${Object.entries(workColors).map(([color, count]) => `<span style="background-color:${color}; padding: 2px 5px;">${count}</span>`).join(' ')}</td>
@@ -878,9 +874,7 @@ function generateCalendar(startDate, schedule, numberOfMonths = 12) {
     loadPinsFromLocal(); // تحميل الدبابيس عند إنشاء الجداول
     loadNotesFromLocal(); // تحميل الملاحظات عند إنشاء الجداول
     loadMonthBackgrounds(); // تحميل الخلفيات عند إنشاء الجداول
-  
 }
-
 
         document.getElementById('generate-schedule').addEventListener('click', function () {
             const startDate = document.getElementById('start-date').value;
