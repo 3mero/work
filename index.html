@@ -423,6 +423,94 @@
         .button-label input[type="color"] {
             display: none;
         }
+      .modal-content {
+    background: #f8f8f8;
+    padding: 10px;
+    border-radius: 10px;
+    width: 30%;
+    max-width: 600px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.settings-group {
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.settings-group h4 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.color-picker-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.color-picker-container label {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.color-picker-container input[type="color"] {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.color-preview {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-left: 10px;
+    border: 1px solid #ddd;
+}
+
+.button-group {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.button-group button {
+    margin-left: 10px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#apply-colors {
+    background-color: #4CAF50;
+    color: white;
+}
+
+#reset-colors {
+    background-color: #f44336;
+    color: white;
+}
+
+#close-bg-settings {
+    background-color: #2196F3;
+    color: white;
+}
+
+.button-group button:hover {
+    opacity: 0.9;
+}
+
+      #bg-settings-modal {
+    display: none;
+        }
+      
     </style>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.5/dist/html2canvas.min.js" async></script>
 </head>
@@ -457,25 +545,47 @@
         <div id="current-date"></div>
         <h2>جدول العمل</h2>
         <button id="open-bg-settings">تغيير خلفيات الصفحة</button>
-        <div id="bg-settings-modal" class="modal" style="display: none;">
-            <div class="modal-content">
-                <h3>تغيير خلفيات الصفحة</h3>
-                <label>خلفية الصفحة الرئيسية:
-                    <input type="color" id="page-bg-color-picker">
-                </label>
-                <label>خلفية جدول العمل:
-                    <input type="color" id="shift-schedule-bg-color-picker">
-                </label>
-                <label>خلفية جدول الإحصائيات:
-                    <input type="color" id="stats-table-bg-color-picker">
-                </label>
-                <label>خلفية تقويم العمل:
-                    <input type="color" id="work-calendar-bg-color-picker">
-                </label>
-                <label>تغيير جميع خلفيات الجداول للاشهر:
-                    <input type="color" id="month-bg-color-picker">
-                </label>
-                <button id="close-bg-settings">إغلاق</button>
+        <div id="bg-settings-modal" class="modal">
+    <div class="modal-content">
+        <h3>إعدادات الخلفيات</h3>
+        <div class="settings-group">
+            <h4>الصفحة الرئيسية</h4>
+            <div class="color-picker-container">
+                <label for="page-bg-color-picker">خلفية الصفحة:</label>
+                <input type="color" id="page-bg-color-picker">
+                <span class="color-preview" id="page-bg-preview"></span>
+            </div>
+        </div>
+        <div class="settings-group">
+            <h4>جداول العمل</h4>
+            <div class="color-picker-container">
+                <label for="shift-schedule-bg-color-picker">جدول العمل:</label>
+                <input type="color" id="shift-schedule-bg-color-picker">
+                <span class="color-preview" id="shift-schedule-bg-preview"></span>
+            </div>
+            <div class="color-picker-container">
+                <label for="stats-table-bg-color-picker">جدول الإحصائيات:</label>
+                <input type="color" id="stats-table-bg-color-picker">
+                <span class="color-preview" id="stats-table-bg-preview"></span>
+            </div>
+            <div class="color-picker-container">
+                <label for="work-calendar-bg-color-picker">تقويم العمل:</label>
+                <input type="color" id="work-calendar-bg-color-picker">
+                <span class="color-preview" id="work-calendar-bg-preview"></span>
+            </div>
+        </div>
+        <div class="settings-group">
+            <h4>الأشهر</h4>
+            <div class="color-picker-container">
+                <label for="month-bg-color-picker">خلفية الأشهر:</label>
+                <input type="color" id="month-bg-color-picker">
+                <span class="color-preview" id="month-bg-preview"></span>
+            </div>
+        </div>
+        <div class="button-group">
+            <button id="apply-colors">تطبيق الألوان</button>
+            <button id="reset-colors">إعادة تعيين الافتراضي</button>
+            <button id="close-bg-settings">إغلاق</button>
             </div>
         </div>
     </div>
@@ -821,13 +931,13 @@ function generateCalendar(startDate, schedule, numberOfMonths = 12) {
             });
         });
 
-        document.getElementById('open-bg-settings').addEventListener('click', function () {
-            document.getElementById('bg-settings-modal').style.display = 'flex';
-        });
+document.getElementById('open-bg-settings').addEventListener('click', function() {
+    document.getElementById('bg-settings-modal').style.display = 'flex';
+});
 
-        document.getElementById('close-bg-settings').addEventListener('click', function () {
-            document.getElementById('bg-settings-modal').style.display = 'none';
-        });
+document.getElementById('close-bg-settings').addEventListener('click', function() {
+    document.getElementById('bg-settings-modal').style.display = 'none';
+});
 
         document.getElementById('page-bg-color-picker').addEventListener('input', function () {
             document.body.style.backgroundColor = this.value;
@@ -855,6 +965,8 @@ function generateCalendar(startDate, schedule, numberOfMonths = 12) {
             });
             saveBackgroundSettings();
         });
+      
+      
 
 function saveScheduleToLocal() {
     const startDate = document.getElementById('start-date').value;
@@ -1036,8 +1148,7 @@ function loadScheduleFromLocal() {
 
 window.addEventListener('load', function() {
     loadBackgroundSettings();
-    loadScheduleFromLocal();
-    updateCurrentDate();
+    applyBackgroundSettings();
 });
 
 function savePinsToLocal() {
@@ -1220,6 +1331,62 @@ function formatDate(dateString) {
 function formatTime(dateString) {
     const options = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
     return new Date(dateString).toLocaleTimeString('ar-EN', options);
+}
+      
+      document.querySelectorAll('.color-picker-container input[type="color"]').forEach(input => {
+    input.addEventListener('input', function() {
+        const preview = this.nextElementSibling;
+        preview.style.backgroundColor = this.value;
+    });
+});
+
+document.getElementById('apply-colors').addEventListener('click', function() {
+    saveBackgroundSettings();
+    applyBackgroundSettings();
+    alert('تم تطبيق الألوان بنجاح');
+});
+
+document.getElementById('reset-colors').addEventListener('click', function() {
+    if (confirm('هل أنت متأكد من إعادة تعيين جميع الألوان إلى الافتراضي؟')) {
+        resetColorsToDefault();
+    }
+});
+
+function resetColorsToDefault() {
+    const defaultColors = {
+        pageBg: '#FFFFFF',
+        shiftScheduleBg: '#F2F2F2',
+        statsTableBg: '#FFFFFF',
+        workCalendarBg: '#F2F2F2',
+        monthBg: '#FFFFFF'
+    };
+
+    Object.keys(defaultColors).forEach(key => {
+        const inputId = `${key}-color-picker`;
+        document.getElementById(inputId).value = defaultColors[key];
+        document.getElementById(`${key}-preview`).style.backgroundColor = defaultColors[key];
+    });
+
+    saveBackgroundSettings();
+    applyBackgroundSettings();
+}
+
+function applyBackgroundSettings() {
+    const backgroundSettings = {
+        pageBg: document.getElementById('page-bg-color-picker').value,
+        shiftScheduleBg: document.getElementById('shift-schedule-bg-color-picker').value,
+        statsTableBg: document.getElementById('stats-table-bg-color-picker').value,
+        workCalendarBg: document.getElementById('work-calendar-bg-color-picker').value,
+        monthBg: document.getElementById('month-bg-color-picker').value
+    };
+
+    document.body.style.backgroundColor = backgroundSettings.pageBg;
+    document.querySelector('.shift-schedule').style.backgroundColor = backgroundSettings.shiftScheduleBg;
+    document.getElementById('stats-table').style.backgroundColor = backgroundSettings.statsTableBg;
+    document.querySelector('.work-calendar').style.backgroundColor = backgroundSettings.workCalendarBg;
+    document.querySelectorAll('.month').forEach(month => {
+        month.style.backgroundColor = backgroundSettings.monthBg;
+    });
 }
 
     </script>
