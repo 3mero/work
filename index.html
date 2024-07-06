@@ -568,200 +568,202 @@
             });
         });
 
-        function generateCalendar(startDate, schedule, numberOfMonths = 12) {
-            const calendar = document.getElementById('calendar');
-            const statsBody = document.getElementById('stats-body');
-            calendar.innerHTML = '';
-            statsBody.innerHTML = '';
-            const startDateObj = new Date(startDate);
-            const today = new Date();
-            let currentDate = new Date(startDate);
-            let dayCount = 0;
-            let totalDaysInSchedule = schedule.reduce((sum, item) => sum + parseInt(item.daysCount), 0);
-            let isFirstWorkDayMonthSet = false;
+function generateCalendar(startDate, schedule, numberOfMonths = 12) {
+    const calendar = document.getElementById('calendar');
+    const statsBody = document.getElementById('stats-body');
+    calendar.innerHTML = '';
+    statsBody.innerHTML = '';
+    const startDateObj = new Date(startDate);
+    const today = new Date();
+    let currentDate = new Date(startDate);
+    let dayCount = 0;
+    let totalDaysInSchedule = schedule.reduce((sum, item) => sum + parseInt(item.daysCount), 0);
+    let isFirstWorkDayMonthSet = false;
 
-            const stats = {};
+    const stats = {};
 
-            function getDayType(dayIndex) {
-                let tempCount = 0;
-                for (const item of schedule) {
-                    tempCount += parseInt(item.daysCount);
-                    if (dayIndex < tempCount) {
-                        return item;
-                    }
-                }
-                return schedule[0];
-            }
-
-            for (let month = 0; month < numberOfMonths; month++) {
-                const monthDiv = document.createElement('div');
-                monthDiv.className = 'month';
-
-                const monthTitle = document.createElement('div');
-                monthTitle.className = 'month-title';
-                const monthNames = ['يناير', 'فبراير', 'مارس', 'إبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
-                monthTitle.textContent = monthNames[currentDate.getMonth()] + ' ' + currentDate.getFullYear();
-
-                const monthNumber = document.createElement('div');
-                monthNumber.className = 'month-number';
-                monthNumber.textContent = 'شهر ' + (currentDate.getMonth() + 1);
-
-                if (!isFirstWorkDayMonthSet && currentDate >= startDateObj) {
-                    monthTitle.classList.add('highlight');
-                    isFirstWorkDayMonthSet = true;
-                }
-
-                monthDiv.appendChild(monthNumber);
-                monthDiv.appendChild(monthTitle);
-
-                const monthTools = document.createElement('div');
-                monthTools.className = 'month-tools';
-                monthTools.innerHTML = `
-                    <button class="edit-notes">✏️</button>
-                    <label class="button-label">🎨
-                        <input type="color" class="change-bg">
-                    </label>
-                `;
-                monthDiv.appendChild(monthTools);
-
-                const notesDropdown = document.createElement('div');
-                notesDropdown.className = 'notes-dropdown';
-                notesDropdown.innerHTML = `
-                    <textarea placeholder="أدخل ملاحظاتك هنا"></textarea>
-                    <button class="save-notes">حفظ</button>
-                    <button class="edit-notes">تعديل</button>
-                    <button class="delete-notes">حذف</button>
-                `;
-                monthDiv.appendChild(notesDropdown);
-
-                const dayHeaders = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-                dayHeaders.forEach(day => {
-                    const dayHeader = document.createElement('div');
-                    dayHeader.className = 'day-header';
-                    dayHeader.textContent = day;
-                    monthDiv.appendChild(dayHeader);
-                });
-
-                const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-                const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
-                const startDay = firstDayOfMonth.getDay();
-
-                for (let i = 0; i < startDay; i++) {
-                    const emptyDiv = document.createElement('div');
-                    emptyDiv.className = 'day';
-                    monthDiv.appendChild(emptyDiv);
-                }
-
-                let workDaysCount = 0;
-                let offDaysCount = 0;
-                let workColors = {};
-                let offColors = {};
-
-                for (let day = 1; day <= daysInMonth; day++) {
-                    const dayDiv = document.createElement('div');
-                    dayDiv.className = 'day';
-                    dayDiv.id = `day-${month}-${day}`;
-                    const fullDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-
-                    let diffDays = Math.floor((fullDate - startDateObj) / (1000 * 60 * 60 * 24)) + 1;
-                    if (fullDate < startDateObj) {
-                        diffDays = (diffDays % totalDaysInSchedule + totalDaysInSchedule) % totalDaysInSchedule;
-                    } else {
-                        diffDays = diffDays % totalDaysInSchedule;
-                    }
-
-                    const dayType = getDayType(diffDays);
-
-                    if (dayType.dayType === 'work') {
-                        dayDiv.classList.add('work-day');
-                        dayDiv.style.backgroundColor = dayType.dayColor;
-                        workDaysCount++;
-                        workColors[dayType.dayColor] = (workColors[dayType.dayColor] || 0) + 1;
-                    } else {
-                        dayDiv.classList.add('day-off');
-                        dayDiv.style.backgroundColor = dayType.dayColor;
-                        offDaysCount++;
-                        offColors[dayType.dayColor] = (offColors[dayType.dayColor] || 0) + 1;
-                    }
-
-                    if (
-                        fullDate.getFullYear() === today.getFullYear() &&
-                        fullDate.getMonth() === today.getMonth() &&
-                        fullDate.getDate() === today.getDate()
-                    ) {
-                        dayDiv.classList.add('today');
-                    }
-
-                    dayDiv.textContent = day;
-
-                    const pin = document.createElement('span');
-                    pin.className = 'pin';
-                    pin.textContent = '📌';
-                    pin.style.display = 'none';
-                    dayDiv.appendChild(pin);
-
-                    dayDiv.addEventListener('dblclick', function () {
-                        pin.style.display = pin.style.display === 'none' ? 'block' : 'none';
-                        savePinsToLocal();
-                        loadPinsFromLocal();
-                    });
-
-                    monthDiv.appendChild(dayDiv);
-
-                    dayCount++;
-                }
-
-                calendar.appendChild(monthDiv);
-                currentDate.setMonth(currentDate.getMonth() + 1);
-
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${monthNames[(currentDate.getMonth() - 1 + 12) % 12]}</td>
-                    <td>${currentDate.getFullYear()}</td>
-                    <td>${workDaysCount}</td>
-                    <td>${offDaysCount}</td>
-                    <td>${Object.entries(workColors).map(([color, count]) => `<span style="background-color:${color}; padding: 2px 5px;">${count}</span>`).join(' ')}</td>
-                    <td>${Object.entries(offColors).map(([color, count]) => `<span style="background-color:${color}; padding: 2px 5px;">${count}</span>`).join(' ')}</td>
-                `;
-                statsBody.appendChild(row);
-
-                const editNotesButton = monthTools.querySelector('.edit-notes');
-                const changeBgInput = monthTools.querySelector('.change-bg');
-                const notesTextarea = notesDropdown.querySelector('textarea');
-                const saveNotesButton = notesDropdown.querySelector('.save-notes');
-                const editNotesDropdownButton = notesDropdown.querySelector('.edit-notes');
-                const deleteNotesButton = notesDropdown.querySelector('.delete-notes');
-
-                editNotesButton.addEventListener('click', function () {
-                    notesDropdown.style.display = notesDropdown.style.display === 'none' ? 'block' : 'none';
-                });
-
-                changeBgInput.addEventListener('input', function () {
-                    monthDiv.style.backgroundColor = this.value;
-                    saveScheduleToLocal();
-                    saveBackgroundSettings();
-                });
-
-                saveNotesButton.addEventListener('click', function () {
-                    alert('تم حفظ الملاحظات');
-                    notesDropdown.style.display = 'none';
-                    saveNotes();
-                });
-
-                editNotesDropdownButton.addEventListener('click', function () {
-                    notesTextarea.disabled = !notesTextarea.disabled;
-                    saveNotes();
-                });
-
-                deleteNotesButton.addEventListener('click', function () {
-                    if (confirm('هل أنت متأكد من حذف الملاحظات؟')) {
-                        notesTextarea.value = '';
-                        notesDropdown.style.display = 'none';
-                        saveNotes();
-                    }
-                });
+    function getDayType(dayIndex) {
+        let tempCount = 0;
+        for (const item of schedule) {
+            tempCount += parseInt(item.daysCount);
+            if (dayIndex < tempCount) {
+                return item;
             }
         }
+        return schedule[0];
+    }
+
+    for (let month = 0; month < numberOfMonths; month++) {
+        const monthDiv = document.createElement('div');
+        monthDiv.className = 'month';
+
+        const monthTitle = document.createElement('div');
+        monthTitle.className = 'month-title';
+        const monthNames = ['يناير', 'فبراير', 'مارس', 'إبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+        monthTitle.textContent = monthNames[currentDate.getMonth()] + ' ' + currentDate.getFullYear();
+
+        const monthNumber = document.createElement('div');
+        monthNumber.className = 'month-number';
+        monthNumber.textContent = 'شهر ' + (currentDate.getMonth() + 1);
+
+        if (!isFirstWorkDayMonthSet && currentDate >= startDateObj) {
+            monthTitle.classList.add('highlight');
+            isFirstWorkDayMonthSet = true;
+        }
+
+        monthDiv.appendChild(monthNumber);
+        monthDiv.appendChild(monthTitle);
+
+        const monthTools = document.createElement('div');
+        monthTools.className = 'month-tools';
+        monthTools.innerHTML = `
+            <button class="edit-notes">✏️</button>
+            <label class="button-label">🎨
+                <input type="color" class="change-bg">
+            </label>
+        `;
+        monthDiv.appendChild(monthTools);
+
+        const notesDropdown = document.createElement('div');
+        notesDropdown.className = 'notes-dropdown';
+        notesDropdown.innerHTML = `
+            <textarea placeholder="أدخل ملاحظاتك هنا"></textarea>
+            <button class="save-notes">حفظ</button>
+            <button class="edit-notes">تعديل</button>
+            <button class="delete-notes">حذف</button>
+        `;
+        monthDiv.appendChild(notesDropdown);
+
+        const dayHeaders = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+        dayHeaders.forEach(day => {
+            const dayHeader = document.createElement('div');
+            dayHeader.className = 'day-header';
+            dayHeader.textContent = day;
+            monthDiv.appendChild(dayHeader);
+        });
+
+        const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+        const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+        const startDay = firstDayOfMonth.getDay();
+
+        for (let i = 0; i < startDay; i++) {
+            const emptyDiv = document.createElement('div');
+            emptyDiv.className = 'day';
+            monthDiv.appendChild(emptyDiv);
+        }
+
+        let workDaysCount = 0;
+        let offDaysCount = 0;
+        let workColors = {};
+        let offColors = {};
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dayDiv = document.createElement('div');
+            dayDiv.className = 'day';
+            dayDiv.id = `day-${month}-${day}`;
+            const fullDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+
+            let diffDays = Math.floor((fullDate - startDateObj) / (1000 * 60 * 60 * 24)) + 1;
+            if (fullDate < startDateObj) {
+                diffDays = (diffDays % totalDaysInSchedule + totalDaysInSchedule) % totalDaysInSchedule;
+            } else {
+                diffDays = diffDays % totalDaysInSchedule;
+            }
+
+            const dayType = getDayType(diffDays);
+
+            if (dayType.dayType === 'work') {
+                dayDiv.classList.add('work-day');
+                dayDiv.style.backgroundColor = dayType.dayColor;
+                workDaysCount++;
+                workColors[dayType.dayColor] = (workColors[dayType.dayColor] || 0) + 1;
+            } else {
+                dayDiv.classList.add('day-off');
+                dayDiv.style.backgroundColor = dayType.dayColor;
+                offDaysCount++;
+                offColors[dayType.dayColor] = (offColors[dayType.dayColor] || 0) + 1;
+            }
+
+            if (
+                fullDate.getFullYear() === today.getFullYear() &&
+                fullDate.getMonth() === today.getMonth() &&
+                fullDate.getDate() === today.getDate()
+            ) {
+                dayDiv.classList.add('today');
+            }
+
+            dayDiv.textContent = day;
+
+            const pin = document.createElement('span');
+            pin.className = 'pin';
+            pin.textContent = '📌';
+            pin.style.display = 'none';
+            dayDiv.appendChild(pin);
+
+            dayDiv.addEventListener('dblclick', function () {
+                pin.style.display = pin.style.display === 'none' ? 'block' : 'none';
+                savePinsToLocal();
+                loadPinsFromLocal();
+            });
+
+            monthDiv.appendChild(dayDiv);
+
+            dayCount++;
+        }
+
+        calendar.appendChild(monthDiv);
+        currentDate.setMonth(currentDate.getMonth() + 1);
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${monthNames[(currentDate.getMonth() - 1 + 12) % 12]}</td>
+            <td>${currentDate.getFullYear()}</td>
+            <td>${workDaysCount}</td>
+            <td>${offDaysCount}</td>
+            <td>${Object.entries(workColors).map(([color, count]) => `<span style="background-color:${color}; padding: 2px 5px;">${count}</span>`).join(' ')}</td>
+            <td>${Object.entries(offColors).map(([color, count]) => `<span style="background-color:${color}; padding: 2px 5px;">${count}</span>`).join(' ')}</td>
+        `;
+        statsBody.appendChild(row);
+
+        const editNotesButton = monthTools.querySelector('.edit-notes');
+        const changeBgInput = monthTools.querySelector('.change-bg');
+        const notesTextarea = notesDropdown.querySelector('textarea');
+        const saveNotesButton = notesDropdown.querySelector('.save-notes');
+        const editNotesDropdownButton = notesDropdown.querySelector('.edit-notes');
+        const deleteNotesButton = notesDropdown.querySelector('.delete-notes');
+
+        editNotesButton.addEventListener('click', function () {
+            notesDropdown.style.display = notesDropdown.style.display === 'none' ? 'block' : 'none';
+        });
+
+changeBgInput.addEventListener('input', function () {
+    monthDiv.style.backgroundColor = this.value;
+    saveScheduleToLocal();
+});
+
+
+        saveNotesButton.addEventListener('click', function () {
+            alert('تم حفظ الملاحظات');
+            notesDropdown.style.display = 'none';
+            saveNotes();
+        });
+
+        editNotesDropdownButton.addEventListener('click', function () {
+            notesTextarea.disabled = !notesTextarea.disabled;
+            saveNotes();
+        });
+
+        deleteNotesButton.addEventListener('click', function () {
+            if (confirm('هل أنت متأكد من حذف الملاحظات؟')) {
+                notesTextarea.value = '';
+                notesDropdown.style.display = 'none';
+                saveNotes();
+            }
+        });
+    }
+    loadPinsFromLocal(); // تحميل الدبابيس عند إنشاء الجداول
+    loadNotesFromLocal(); // تحميل الملاحظات عند إنشاء الجداول
+}
 
         document.getElementById('generate-schedule').addEventListener('click', function () {
             const startDate = document.getElementById('start-date').value;
@@ -852,31 +854,32 @@
             saveBackgroundSettings();
         });
 
-        function saveScheduleToLocal() {
-            const startDate = document.getElementById('start-date').value;
-            const scheduleItems = document.querySelectorAll('.schedule-item');
-            const schedule = [];
+function saveScheduleToLocal() {
+    const startDate = document.getElementById('start-date').value;
+    const scheduleItems = document.querySelectorAll('.schedule-item');
+    const schedule = [];
 
-            scheduleItems.forEach(item => {
-                const dayType = item.querySelector('.day-type').value;
-                const daysCount = item.querySelector('.days-count').value;
-                const dayColor = item.querySelector('.day-color').value;
-                schedule.push({ dayType, daysCount, dayColor });
-            });
+    scheduleItems.forEach(item => {
+        const dayType = item.querySelector('.day-type').value;
+        const daysCount = item.querySelector('.days-count').value;
+        const dayColor = item.querySelector('.day-color').value;
+        schedule.push({ dayType, daysCount, dayColor });
+    });
 
-            const monthBackgrounds = [];
-            document.querySelectorAll('.month').forEach(monthDiv => {
-                monthBackgrounds.push(monthDiv.style.backgroundColor);
-            });
+    const monthBackgrounds = {};
+    document.querySelectorAll('.month').forEach(monthDiv => {
+        const monthTitle = monthDiv.querySelector('.month-title').textContent;
+        monthBackgrounds[monthTitle] = monthDiv.style.backgroundColor;
+    });
 
-            const scheduleData = {
-                startDate: startDate,
-                schedule: schedule,
-                monthBackgrounds: monthBackgrounds
-            };
+    const scheduleData = {
+        startDate: startDate,
+        schedule: schedule,
+        monthBackgrounds: monthBackgrounds
+    };
 
-            localStorage.setItem('workSchedule', JSON.stringify(scheduleData));
-        }
+    localStorage.setItem('workSchedule', JSON.stringify(scheduleData));
+}
 
         function saveBackgroundSettings() {
             const workCalendarBg = document.getElementById('work-calendar-bg-color-picker').value;
@@ -885,171 +888,148 @@
             const shiftScheduleBg = document.getElementById('shift-schedule-bg-color-picker').value;
             const monthBg = document.getElementById('month-bg-color-picker').value;
             const allNotesBg = document.getElementById('color-picker').value;
+
             const backgroundSettings = {
-              
                 workCalendarBg: workCalendarBg,
                 statsTableBg: statsTableBg,
                 pageBg: pageBg,
                 shiftScheduleBg: shiftScheduleBg,
-                monthBg: monthBg, // هنا يجب إضافة الفاصلة
+                monthBg: monthBg,
                 allNotesBg: allNotesBg
-                };
+            };
 
             localStorage.setItem('backgroundSettings', JSON.stringify(backgroundSettings));
         }
 
-        function loadBackgroundSettings() {
-            const savedBackgroundSettings = localStorage.getItem('backgroundSettings');
-            if (savedBackgroundSettings) {
-                const backgroundSettings = JSON.parse(savedBackgroundSettings);
-                document.querySelector('.work-calendar').style.backgroundColor = backgroundSettings.workCalendarBg || '#FFFFFF';
-                document.getElementById('work-calendar-bg-color-picker').value = backgroundSettings.workCalendarBg || '#FFFFFF';
+function loadBackgroundSettings() {
+    const savedBackgroundSettings = localStorage.getItem('backgroundSettings');
+    if (savedBackgroundSettings) {
+        const backgroundSettings = JSON.parse(savedBackgroundSettings);
+        document.querySelector('.work-calendar').style.backgroundColor = backgroundSettings.workCalendarBg || '#FFFFFF';
+        document.getElementById('work-calendar-bg-color-picker').value = backgroundSettings.workCalendarBg || '#FFFFFF';
 
-                document.getElementById('stats-table').style.backgroundColor = backgroundSettings.statsTableBg || '#FFFFFF';
-                document.getElementById('stats-table-bg-color-picker').value = backgroundSettings.statsTableBg || '#FFFFFF';
+        document.getElementById('stats-table').style.backgroundColor = backgroundSettings.statsTableBg || '#FFFFFF';
+        document.getElementById('stats-table-bg-color-picker').value = backgroundSettings.statsTableBg || '#FFFFFF';
 
-                document.body.style.backgroundColor = backgroundSettings.pageBg || '#FFFFFF';
-                document.getElementById('page-bg-color-picker').value = backgroundSettings.pageBg || '#FFFFFF';
+        document.body.style.backgroundColor = backgroundSettings.pageBg || '#FFFFFF';
+        document.getElementById('page-bg-color-picker').value = backgroundSettings.pageBg || '#FFFFFF';
 
-                document.querySelector('.shift-schedule').style.backgroundColor = backgroundSettings.shiftScheduleBg || '#FFFFFF';
-                document.getElementById('shift-schedule-bg-color-picker').value = backgroundSettings.shiftScheduleBg || '#FFFFFF';
+        document.querySelector('.shift-schedule').style.backgroundColor = backgroundSettings.shiftScheduleBg || '#FFFFFF';
+        document.getElementById('shift-schedule-bg-color-picker').value = backgroundSettings.shiftScheduleBg || '#FFFFFF';
 
-                document.querySelectorAll('.month').forEach(month => {
-                    month.style.backgroundColor = backgroundSettings.monthBg || '#FFFFFF';
-                });
-                document.getElementById('month-bg-color-picker').value = backgroundSettings.monthBg || '#FFFFFF';
-            }
-        }
+        document.querySelectorAll('.month').forEach(month => {
+            const monthTitle = month.querySelector('.month-title').textContent;
+            month.style.backgroundColor = backgroundSettings.monthBackgrounds[monthTitle] || '#FFFFFF';
+        });
+
+        document.getElementById('month-bg-color-picker').value = backgroundSettings.monthBg || '#FFFFFF';
+        document.getElementById('all-notes-content').style.backgroundColor = backgroundSettings.allNotesBg || '#FFFFFF';
+        document.getElementById('color-picker').value = backgroundSettings.allNotesBg || '#FFFFFF';
+    }
+}
+
 
 function saveNotes() {
-    const notes = [];
-    const noteTimestamps = [];
+    const notes = {};
+    const noteTimestamps = {};
     document.querySelectorAll('.month').forEach((monthDiv, index) => {
         const notesTextarea = monthDiv.querySelector('.notes-dropdown textarea');
-        notes.push(notesTextarea.value);
+        const monthTitle = monthDiv.querySelector('.month-title').textContent;
+        notes[monthTitle] = notesTextarea.value;
 
-        // تغيير الرمز التعبيري بناءً على وجود ملاحظة
         const editNotesButton = monthDiv.querySelector('.edit-notes');
         if (notesTextarea.value.trim()) {
             editNotesButton.textContent = '📝';
-            noteTimestamps[index] = new Date().toISOString();
+            noteTimestamps[monthTitle] = new Date().toISOString();
         } else {
             editNotesButton.textContent = '✏️';
-            noteTimestamps[index] = '';
+            noteTimestamps[monthTitle] = '';
         }
     });
     localStorage.setItem('notes', JSON.stringify(notes));
     localStorage.setItem('noteTimestamps', JSON.stringify(noteTimestamps));
 }
 
+function loadNotesFromLocal() {
+    const savedNotes = localStorage.getItem('notes');
+    const savedNoteTimestamps = localStorage.getItem('noteTimestamps');
+    if (savedNotes) {
+        const notes = JSON.parse(savedNotes);
+        const noteTimestamps = JSON.parse(savedNoteTimestamps);
+        document.querySelectorAll('.month').forEach((monthDiv) => {
+            const monthTitle = monthDiv.querySelector('.month-title').textContent;
+            const notesTextarea = monthDiv.querySelector('.notes-dropdown textarea');
+            notesTextarea.value = notes[monthTitle] || '';
 
-        function loadNotesFromLocal() {
-            const savedNotes = localStorage.getItem('notes');
-            const savedNoteTimestamps = localStorage.getItem('noteTimestamps');
-            if (savedNotes) {
-                const notes = JSON.parse(savedNotes);
-                const noteTimestamps = JSON.parse(savedNoteTimestamps);
-                document.querySelectorAll('.month').forEach((monthDiv, index) => {
-                    const notesTextarea = monthDiv.querySelector('.notes-dropdown textarea');
-                    notesTextarea.value = notes[index] || '';
-
-                    // تغيير الرمز التعبيري بناءً على وجود ملاحظة
-                    const editNotesButton = monthDiv.querySelector('.edit-notes');
-                    if (notesTextarea.value.trim()) {
-                        editNotesButton.textContent = '📝';
-                    } else {
-                        editNotesButton.textContent = '✏️';
-                    }
-                });
+            const editNotesButton = monthDiv.querySelector('.edit-notes');
+            if (notesTextarea.value.trim()) {
+                editNotesButton.textContent = '📝';
+            } else {
+                editNotesButton.textContent = '✏️';
             }
-        }
+        });
+    }
+}
 
-        function loadScheduleFromLocal() {
-            const savedSchedule = localStorage.getItem('workSchedule');
-            const savedBackgroundSettings = localStorage.getItem('backgroundSettings');
+function loadScheduleFromLocal() {
+    const savedSchedule = localStorage.getItem('workSchedule');
+    const savedBackgroundSettings = localStorage.getItem('backgroundSettings');
 
-            // تعيين اللون الأبيض كلون افتراضي
-            const defaultWhite = '#FFFFFF';
+    // تعيين اللون الأبيض كلون افتراضي
+    const defaultWhite = '#FFFFFF';
 
-            // إعداد الخلفيات الافتراضية
-            let workCalendarBg = defaultWhite;
-            let statsTableBg = defaultWhite;
-            let pageBg = defaultWhite;
-            let shiftScheduleBg = defaultWhite;
+    if (savedSchedule) {
+        const scheduleData = JSON.parse(savedSchedule);
+        document.getElementById('start-date').value = scheduleData.startDate;
 
-            if (savedSchedule) {
-                const scheduleData = JSON.parse(savedSchedule);
-                document.getElementById('start-date').value = scheduleData.startDate;
+        const scheduleItemsContainer = document.getElementById('schedule-items');
+        scheduleItemsContainer.innerHTML = '';
 
-                const scheduleItemsContainer = document.getElementById('schedule-items');
-                scheduleItemsContainer.innerHTML = '';
+        scheduleData.schedule.forEach(item => {
+            const newItem = document.createElement('div');
+            newItem.className = 'schedule-item';
+            newItem.innerHTML = `
+                <select class="day-type">
+                    <option value="work" ${item.dayType === 'work' ? 'selected' : ''}>أيام العمل</option>
+                    <option value="off" ${item.dayType === 'off' ? 'selected' : ''}>أيام العطلة</option>
+                </select>
+                <input type="number" class="days-count" value="${item.daysCount}" min="1" max="99">
+                <input type="color" class="day-color" value="${item.dayColor}">
+                <span class="remove-item">X</span>
+            `;
+            newItem.querySelector('.remove-item').addEventListener('click', function () {
+                newItem.remove();
+                saveScheduleToLocal();
+                savePinsToLocal();
+            });
+            scheduleItemsContainer.appendChild(newItem);
+        });
 
-                scheduleData.schedule.forEach(item => {
-                    const newItem = document.createElement('div');
-                    newItem.className = 'schedule-item';
-                    newItem.innerHTML = `
-                        <select class="day-type">
-                            <option value="work" ${item.dayType === 'work' ? 'selected' : ''}>أيام العمل</option>
-                            <option value="off" ${item.dayType === 'off' ? 'selected' : ''}>أيام العطلة</option>
-                        </select>
-                        <input type="number" class="days-count" value="${item.daysCount}" min="1" max="99">
-                        <input type="color" class="day-color" value="${item.dayColor}">
-                        <span class="remove-item">X</span>
-                    `;
-                    newItem.querySelector('.remove-item').addEventListener('click', function () {
-                        newItem.remove();
-                        saveScheduleToLocal();
-                        savePinsToLocal();
-                    });
-                    scheduleItemsContainer.appendChild(newItem);
-                });
+        generateCalendar(scheduleData.startDate, scheduleData.schedule);
+        loadPinsFromLocal();
 
-                generateCalendar(scheduleData.startDate, scheduleData.schedule);
-                loadPinsFromLocal();
-                // استرجاع خلفيات الأشهر
-                document.querySelectorAll('.month').forEach((monthDiv, index) => {
-                    monthDiv.style.backgroundColor = scheduleData.monthBackgrounds && scheduleData.monthBackgrounds[index] 
-                        ? scheduleData.monthBackgrounds[index] 
-                        : defaultWhite;
-                });
-            }
+        // استرجاع خلفيات الأشهر
+        document.querySelectorAll('.month').forEach(monthDiv => {
+            const monthTitle = monthDiv.querySelector('.month-title').textContent;
+            monthDiv.style.backgroundColor = scheduleData.monthBackgrounds[monthTitle] || defaultWhite;
+        });
+    }
 
-            if (savedBackgroundSettings) {
-                const backgroundSettings = JSON.parse(savedBackgroundSettings);
-                workCalendarBg = backgroundSettings.workCalendarBg || defaultWhite;
-                statsTableBg = backgroundSettings.statsTableBg || defaultWhite;
-                pageBg = backgroundSettings.pageBg || defaultWhite;
-                shiftScheduleBg = backgroundSettings.shiftScheduleBg || defaultWhite;
-            }
+    if (savedBackgroundSettings) {
+        const backgroundSettings = JSON.parse(savedBackgroundSettings);
+        document.querySelector('.work-calendar').style.backgroundColor = backgroundSettings.workCalendarBg || '#FFFFFF';
+        document.getElementById('work-calendar-bg-color-picker').value = backgroundSettings.workCalendarBg || '#FFFFFF';
 
-            // تطبيق الإعدادات
-            document.querySelector('.work-calendar').style.backgroundColor = workCalendarBg;
-            document.getElementById('work-calendar-bg-color-picker').value = workCalendarBg;
+        document.getElementById('stats-table').style.backgroundColor = backgroundSettings.statsTableBg || '#FFFFFF';
+        document.getElementById('stats-table-bg-color-picker').value = backgroundSettings.statsTableBg || '#FFFFFF';
 
-            document.getElementById('stats-table').style.backgroundColor = statsTableBg;
-            document.getElementById('stats-table-bg-color-picker').value = statsTableBg;
+        document.body.style.backgroundColor = backgroundSettings.pageBg || '#FFFFFF';
+        document.getElementById('page-bg-color-picker').value = backgroundSettings.pageBg || '#FFFFFF';
 
-            document.body.style.backgroundColor = pageBg;
-            document.getElementById('page-bg-color-picker').value = pageBg;
-
-            document.querySelector('.shift-schedule').style.backgroundColor = shiftScheduleBg;
-            document.getElementById('shift-schedule-bg-color-picker').value = shiftScheduleBg;
-
-            // إذا لم يتم العثور على جدول محفوظ، قم بتعيين الخلفيات الافتراضية للأشهر
-            if (!savedSchedule) {
-                document.querySelectorAll('.month').forEach(monthDiv => {
-                    monthDiv.style.backgroundColor = defaultWhite;
-                });
-            }
-
-            // حفظ الإعدادات الافتراضية إذا لم تكن موجودة
-            if (!savedBackgroundSettings) {
-                saveBackgroundSettings();
-            }
-
-            loadPinsFromLocal();
-            loadNotesFromLocal(); // تحميل الملاحظات
-        }
+        document.querySelector('.shift-schedule').style.backgroundColor = backgroundSettings.shiftScheduleBg || '#FFFFFF';
+        document.getElementById('shift-schedule-bg-color-picker').value = backgroundSettings.shiftScheduleBg || '#FFFFFF';
+    }
+}
 
         // استدعاء الدالة عند تحميل الصفحة
         window.addEventListener('load', function() {
@@ -1058,29 +1038,38 @@ function saveNotes() {
             updateCurrentDate();
         });
 
-        function savePinsToLocal() {
-            const pins = [];
-            document.querySelectorAll('.day').forEach((dayDiv, index) => {
+function savePinsToLocal() {
+    const pins = {};
+    document.querySelectorAll('.month').forEach((monthDiv) => {
+        const monthTitle = monthDiv.querySelector('.month-title').textContent;
+        const pinnedDays = [];
+        monthDiv.querySelectorAll('.day').forEach((dayDiv, index) => {
+            const pin = dayDiv.querySelector('.pin');
+            if (pin && pin.style.display === 'block') {
+                pinnedDays.push(index);
+            }
+        });
+        pins[monthTitle] = pinnedDays;
+    });
+    localStorage.setItem('pinnedDays', JSON.stringify(pins));
+}
+
+function loadPinsFromLocal() {
+    const savedPins = localStorage.getItem('pinnedDays');
+    if (savedPins) {
+        const pins = JSON.parse(savedPins);
+        document.querySelectorAll('.month').forEach((monthDiv) => {
+            const monthTitle = monthDiv.querySelector('.month-title').textContent;
+            const pinnedDays = pins[monthTitle] || [];
+            monthDiv.querySelectorAll('.day').forEach((dayDiv, index) => {
                 const pin = dayDiv.querySelector('.pin');
-                if (pin && pin.style.display === 'block') {
-                    pins.push(index);
+                if (pin) {
+                    pin.style.display = pinnedDays.includes(index) ? 'block' : 'none';
                 }
             });
-            localStorage.setItem('pinnedDays', JSON.stringify(pins));
-        }
-
-        function loadPinsFromLocal() {
-            const savedPins = localStorage.getItem('pinnedDays');
-            if (savedPins) {
-                const pinnedDays = JSON.parse(savedPins);
-                document.querySelectorAll('.day').forEach((dayDiv, index) => {
-                    const pin = dayDiv.querySelector('.pin');
-                    if (pin) {
-                        pin.style.display = pinnedDays.includes(index) ? 'block' : 'none';
-                    }
-                });
-            }
-        }
+        });
+    }
+}
 
         document.getElementById('reset-page').addEventListener('click', function() {
             localStorage.clear();
@@ -1159,27 +1148,23 @@ document.getElementById('show-all-notes').addEventListener('click', function () 
         </div>
     `;
 
-    const savedNotes = JSON.parse(localStorage.getItem('notes')) || [];
-    const savedNoteTimestamps = JSON.parse(localStorage.getItem('noteTimestamps')) || [];
-    const months = document.querySelectorAll('.month-title');
-    const startDate = document.getElementById('start-date').value;
-    const monthNames = ['يناير', 'فبراير', 'مارس', 'إبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+    const savedNotes = JSON.parse(localStorage.getItem('notes')) || {};
+    const savedNoteTimestamps = JSON.parse(localStorage.getItem('noteTimestamps')) || {};
 
-    savedNotes.forEach((note, index) => {
-        if (note.trim()) {
-            const month = months[index].textContent;
-            const noteTimestamp = savedNoteTimestamps[index] || new Date().toISOString();
+    Object.keys(savedNotes).forEach(monthTitle => {
+        const noteText = savedNotes[monthTitle];
+        const noteTimestamp = savedNoteTimestamps[monthTitle];
+        if (noteText && noteTimestamp) {
             const formattedDate = formatDate(noteTimestamp);
             const formattedTime = formatTime(noteTimestamp);
-
             const noteItem = document.createElement('div');
             noteItem.className = 'note-item';
             noteItem.innerHTML = `
-                <div>${month}</div>
-                <div>${startDate}</div>
+                <div>${monthTitle}</div>
+                <div>${document.getElementById('start-date').value}</div>
                 <div>${formattedTime}</div>
                 <div>${formattedDate}</div>
-                <textarea>${note}</textarea>
+                <textarea>${noteText}</textarea>
                 <div class="note-actions">
                     <button class="save-note">حفظ</button>
                     <button class="delete-note">حذف</button>
@@ -1187,8 +1172,8 @@ document.getElementById('show-all-notes').addEventListener('click', function () 
             `;
 
             noteItem.querySelector('.save-note').addEventListener('click', function () {
-                savedNotes[index] = noteItem.querySelector('textarea').value;
-                savedNoteTimestamps[index] = new Date().toISOString();
+                savedNotes[monthTitle] = noteItem.querySelector('textarea').value;
+                savedNoteTimestamps[monthTitle] = new Date().toISOString();
                 localStorage.setItem('notes', JSON.stringify(savedNotes));
                 localStorage.setItem('noteTimestamps', JSON.stringify(savedNoteTimestamps));
                 alert('تم حفظ الملاحظة');
@@ -1196,8 +1181,8 @@ document.getElementById('show-all-notes').addEventListener('click', function () 
 
             noteItem.querySelector('.delete-note').addEventListener('click', function () {
                 if (confirm('هل أنت متأكد من حذف هذه الملاحظة؟')) {
-                    savedNotes[index] = '';
-                    savedNoteTimestamps[index] = '';
+                    delete savedNotes[monthTitle];
+                    delete savedNoteTimestamps[monthTitle];
                     localStorage.setItem('notes', JSON.stringify(savedNotes));
                     localStorage.setItem('noteTimestamps', JSON.stringify(savedNoteTimestamps));
                     noteItem.remove();
@@ -1209,8 +1194,8 @@ document.getElementById('show-all-notes').addEventListener('click', function () 
         }
     });
 
-            document.getElementById('all-notes-modal').style.display = 'flex';
-        });
+    document.getElementById('all-notes-modal').style.display = 'flex';
+});
 
         document.getElementById('close-notes').addEventListener('click', function () {
             document.getElementById('all-notes-modal').style.display = 'none';
@@ -1222,9 +1207,10 @@ document.getElementById('show-all-notes').addEventListener('click', function () 
 
         document.getElementById('color-picker').addEventListener('input', function () {
             document.getElementById('all-notes-content').style.backgroundColor = this.value;
+            saveBackgroundSettings();
         });
       
-      function formatDate(dateString) {
+function formatDate(dateString) {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(dateString).toLocaleDateString('ar-EN', options);
 }
