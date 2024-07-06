@@ -713,6 +713,7 @@ function generateCalendar(startDate, schedule, numberOfMonths = 12) {
 
         calendar.appendChild(monthDiv);
         currentDate.setMonth(currentDate.getMonth() + 1);
+        currentDate.setDate(1); // تعيين اليوم الأول من الشهر التالي لتجنب مشكلة اختفاء الأشهر
 
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -736,11 +737,10 @@ function generateCalendar(startDate, schedule, numberOfMonths = 12) {
             notesDropdown.style.display = notesDropdown.style.display === 'none' ? 'block' : 'none';
         });
 
-changeBgInput.addEventListener('input', function () {
-    monthDiv.style.backgroundColor = this.value;
-    saveScheduleToLocal();
-});
-
+        changeBgInput.addEventListener('input', function () {
+            monthDiv.style.backgroundColor = this.value;
+            saveScheduleToLocal();
+        });
 
         saveNotesButton.addEventListener('click', function () {
             alert('تم حفظ الملاحظات');
@@ -763,7 +763,9 @@ changeBgInput.addEventListener('input', function () {
     }
     loadPinsFromLocal(); // تحميل الدبابيس عند إنشاء الجداول
     loadNotesFromLocal(); // تحميل الملاحظات عند إنشاء الجداول
+    loadMonthBackgrounds(); // تحميل الخلفيات عند إنشاء الجداول
 }
+
 
         document.getElementById('generate-schedule').addEventListener('click', function () {
             const startDate = document.getElementById('start-date').value;
@@ -866,6 +868,7 @@ function saveScheduleToLocal() {
         schedule.push({ dayType, daysCount, dayColor });
     });
 
+    // حفظ خلفيات الأشهر
     const monthBackgrounds = {};
     document.querySelectorAll('.month').forEach(monthDiv => {
         const monthTitle = monthDiv.querySelector('.month-title').textContent;
@@ -1031,12 +1034,11 @@ function loadScheduleFromLocal() {
     }
 }
 
-        // استدعاء الدالة عند تحميل الصفحة
-        window.addEventListener('load', function() {
-            loadBackgroundSettings();
-            loadScheduleFromLocal();
-            updateCurrentDate();
-        });
+window.addEventListener('load', function() {
+    loadBackgroundSettings();
+    loadScheduleFromLocal();
+    updateCurrentDate();
+});
 
 function savePinsToLocal() {
     const pins = {};
