@@ -389,7 +389,7 @@
             z-index: 1000;
         }
         .modal-content {
-            background: #777E7E;
+            background: #fff;
             padding: 20px;
             border-radius: 5px;
             width: 80%;
@@ -1146,9 +1146,14 @@ function loadScheduleFromLocal() {
 }
 
 window.addEventListener('load', function() {
-    loadBackgroundSettings();
-    applyBackgroundSettings();
+    if (!localStorage.getItem('backgroundSettings')) {
+        resetBackgrounds(); // ضبط الخلفيات البيضاء عند أول تحميل للصفحة
+    } else {
+        loadBackgroundSettings();
+        applyBackgroundSettings();
+    }
 });
+
 
 function savePinsToLocal() {
     const pins = {};
@@ -1183,10 +1188,12 @@ function loadPinsFromLocal() {
     }
 }
 
-        document.getElementById('reset-page').addEventListener('click', function() {
-            localStorage.clear();
-            location.reload();
-        });
+document.getElementById('reset-page').addEventListener('click', function() {
+    localStorage.clear();
+    resetBackgrounds();
+    location.reload();
+});
+
 
         document.getElementById('export-data').addEventListener('click', function () {
             const employeeName = prompt('أدخل اسم الموظف:');
@@ -1387,6 +1394,26 @@ function applyBackgroundSettings() {
         month.style.backgroundColor = backgroundSettings.monthBg;
     });
 }
+      
+      function resetBackgrounds() {
+    document.body.style.backgroundColor = '#FFFFFF';
+    document.querySelector('.shift-schedule').style.backgroundColor = '#FFFFFF';
+    document.getElementById('stats-table').style.backgroundColor = '#FFFFFF';
+    document.querySelector('.work-calendar').style.backgroundColor = '#FFFFFF';
+    document.querySelectorAll('.month').forEach(month => {
+        month.style.backgroundColor = '#FFFFFF';
+    });
+
+    // تحديث ألوان مختارات الألوان
+    document.getElementById('page-bg-color-picker').value = '#FFFFFF';
+    document.getElementById('shift-schedule-bg-color-picker').value = '#FFFFFF';
+    document.getElementById('stats-table-bg-color-picker').value = '#FFFFFF';
+    document.getElementById('work-calendar-bg-color-picker').value = '#FFFFFF';
+    document.getElementById('month-bg-color-picker').value = '#FFFFFF';
+
+    saveBackgroundSettings();
+}
+
 
     </script>
 </body>
