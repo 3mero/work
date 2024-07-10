@@ -981,16 +981,16 @@ function saveScheduleToLocal() {
         schedule.push({ dayType, daysCount, dayColor });
     });
 
-    const monthBackgrounds = {};
-    document.querySelectorAll('.month').forEach(monthDiv => {
-        const monthTitle = monthDiv.querySelector('.month-title').textContent;
-        monthBackgrounds[monthTitle] = monthDiv.style.backgroundColor || '#FFFFFF';
-    });
+const monthBackgrounds = {};
+document.querySelectorAll('.month').forEach(monthDiv => {
+    const monthTitle = monthDiv.querySelector('.month-title').textContent;
+    monthBackgrounds[monthTitle] = monthDiv.style.backgroundColor || '#FFFFFF';
+});
 
-    const scheduleData = {
-        startDate: startDate,
-        schedule: schedule,
-        monthBackgrounds: monthBackgrounds,
+const scheduleData = {
+    startDate: startDate,
+    schedule: schedule,
+    monthBackgrounds: monthBackgrounds,
         employeeName: document.getElementById('employee-name').textContent.split(': ')[1],
         employeeStartDate: document.getElementById('employee-start-date').textContent.split(': ')[1]
     };
@@ -1023,24 +1023,26 @@ function loadBackgroundSettings() {
     const savedBackgroundSettings = localStorage.getItem('backgroundSettings');
     if (savedBackgroundSettings) {
         const backgroundSettings = JSON.parse(savedBackgroundSettings);
-        document.querySelector('.work-calendar').style.backgroundColor = backgroundSettings.workCalendarBg || '#FFFFFF';
-        document.getElementById('work-calendar-bg-color-picker').value = backgroundSettings.workCalendarBg || '#FFFFFF';
-
-        document.getElementById('stats-table').style.backgroundColor = backgroundSettings.statsTableBg || '#FFFFFF';
-        document.getElementById('stats-table-bg-color-picker').value = backgroundSettings.statsTableBg || '#FFFFFF';
-
+        
+        // تطبيق الخلفيات على العناصر
         document.body.style.backgroundColor = backgroundSettings.pageBg || '#FFFFFF';
+        document.querySelector('.shift-schedule').style.backgroundColor = backgroundSettings.shiftScheduleBg || '#F2F2F2';
+        document.getElementById('stats-table').style.backgroundColor = backgroundSettings.statsTableBg || '#FFFFFF';
+        document.querySelector('.work-calendar').style.backgroundColor = backgroundSettings.workCalendarBg || '#F2F2F2';
+        
+        // تحديث قيم مختارات الألوان
         document.getElementById('page-bg-color-picker').value = backgroundSettings.pageBg || '#FFFFFF';
-
-        document.querySelector('.shift-schedule').style.backgroundColor = backgroundSettings.shiftScheduleBg || '#FFFFFF';
-        document.getElementById('shift-schedule-bg-color-picker').value = backgroundSettings.shiftScheduleBg || '#FFFFFF';
-
+        document.getElementById('shift-schedule-bg-color-picker').value = backgroundSettings.shiftScheduleBg || '#F2F2F2';
+        document.getElementById('stats-table-bg-color-picker').value = backgroundSettings.statsTableBg || '#FFFFFF';
+        document.getElementById('work-calendar-bg-color-picker').value = backgroundSettings.workCalendarBg || '#F2F2F2';
+        document.getElementById('month-bg-color-picker').value = backgroundSettings.monthBg || '#FFFFFF';
+        
+        // تطبيق خلفية الأشهر
         document.querySelectorAll('.month').forEach(month => {
-            const monthTitle = month.querySelector('.month-title').textContent;
-            month.style.backgroundColor = backgroundSettings.monthBackgrounds[monthTitle] || '#FFFFFF';
+            month.style.backgroundColor = backgroundSettings.monthBg || '#FFFFFF';
         });
 
-        document.getElementById('month-bg-color-picker').value = backgroundSettings.monthBg || '#FFFFFF';
+        // تطبيق خلفية قائمة الملاحظات
         document.getElementById('all-notes-content').style.backgroundColor = backgroundSettings.allNotesBg || '#FFFFFF';
         document.getElementById('color-picker').value = backgroundSettings.allNotesBg || '#FFFFFF';
     }
@@ -1196,14 +1198,15 @@ document.getElementById('reset-page').addEventListener('click', function() {
             const pins = JSON.parse(localStorage.getItem('pinnedDays')) || [];
             const backgrounds = JSON.parse(localStorage.getItem('backgroundSettings')) || {};
 
-            const data = {
-                employeeName: employeeName,
-                startDate: startDate,
-                schedule: schedule,
-                notes: notes,
-                pins: pins,
-                backgrounds: backgrounds
-            };
+    const data = {
+        employeeName: employeeName,
+        startDate: startDate,
+        schedule: JSON.parse(localStorage.getItem('workSchedule')) || {},
+        notes: JSON.parse(localStorage.getItem('notes')) || {},
+        noteTimestamps: JSON.parse(localStorage.getItem('noteTimestamps')) || {},
+        pins: JSON.parse(localStorage.getItem('pinnedDays')) || {},
+        backgrounds: JSON.parse(localStorage.getItem('backgroundSettings')) || {}
+    };
 
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
@@ -1222,24 +1225,28 @@ document.getElementById('reset-page').addEventListener('click', function() {
                 const file = event.target.files[0];
                 if (file) {
                     const reader = new FileReader();
-                    reader.onload = function (e) {
-                        const data = JSON.parse(e.target.result);
-                        localStorage.setItem('workSchedule', JSON.stringify(data.schedule));
-                        localStorage.setItem('notes', JSON.stringify(data.notes));
-                        localStorage.setItem('pinnedDays', JSON.stringify(data.pins));
-                        localStorage.setItem('backgroundSettings', JSON.stringify(data.backgrounds));
-                        document.getElementById('start-date').value = data.startDate;
-                        loadScheduleFromLocal();
-                        loadNotesFromLocal();
-                        loadPinsFromLocal();
+    reader.onload = function (e) {
+        const data = JSON.parse(e.target.result);
+        localStorage.setItem('workSchedule', JSON.stringify(data.schedule));
+        localStorage.setItem('notes', JSON.stringify(data.notes));
+        localStorage.setItem('pinnedDays', JSON.stringify(data.pins));
+        localStorage.setItem('backgroundSettings', JSON.stringify(data.backgrounds));
+        localStorage.setItem('noteTimestamps', JSON.stringify(data.noteTimestamps)); // إضافة هذا السطر
+        
+        document.getElementById('start-date').value = data.startDate;
+        
+        loadScheduleFromLocal();
+        loadNotesFromLocal();
+        loadPinsFromLocal();
+        loadBackgroundSettings();
+        
+        // عرض المعلومات في الصندوق الأحمر
+        document.getElementById('employee-name').textContent = `اسم الموظف: ${data.employeeName}`;
+        document.getElementById('employee-start-date').textContent = `تاريخ البدء: ${data.startDate}`;
+        document.getElementById('employee-info').style.display = 'block';
 
-                        // عرض المعلومات في الصندوق الأحمر
-                        document.getElementById('employee-name').textContent = `اسم الموظف: ${data.employeeName}`;
-                        document.getElementById('employee-start-date').textContent = `تاريخ البدء: ${data.startDate}`;
-                        document.getElementById('employee-info').style.display = 'block';
-
-                        alert('تم استيراد البيانات بنجاح');
-                    };
+        alert('تم استيراد البيانات بنجاح');
+    };
                     reader.readAsText(file);
                 }
             });
@@ -1264,9 +1271,9 @@ document.getElementById('show-all-notes').addEventListener('click', function () 
     Object.keys(savedNotes).forEach(monthTitle => {
         const noteText = savedNotes[monthTitle];
         const noteTimestamp = savedNoteTimestamps[monthTitle];
-        if (noteText && noteTimestamp) {
-            const formattedDate = formatDate(noteTimestamp);
-            const formattedTime = formatTime(noteTimestamp);
+        if (noteText) {
+            const formattedDate = noteTimestamp ? formatDate(noteTimestamp) : 'غير محدد';
+            const formattedTime = noteTimestamp ? formatTime(noteTimestamp) : 'غير محدد';
             const noteItem = document.createElement('div');
             noteItem.className = 'note-item';
             noteItem.innerHTML = `
@@ -1306,7 +1313,6 @@ document.getElementById('show-all-notes').addEventListener('click', function () 
 
     document.getElementById('all-notes-modal').style.display = 'flex';
 });
-
         document.getElementById('close-notes').addEventListener('click', function () {
             document.getElementById('all-notes-modal').style.display = 'none';
         });
@@ -1428,14 +1434,14 @@ function applyBackgroundSettings() {
     const savedSchedule = localStorage.getItem('workSchedule');
     if (savedSchedule) {
         const scheduleData = JSON.parse(savedSchedule);
-        if (scheduleData.monthBackgrounds) {
-            document.querySelectorAll('.month').forEach(monthDiv => {
-                const monthTitle = monthDiv.querySelector('.month-title').textContent;
-                if (scheduleData.monthBackgrounds[monthTitle]) {
-                    monthDiv.style.backgroundColor = scheduleData.monthBackgrounds[monthTitle];
-                }
-            });
+if (scheduleData.monthBackgrounds) {
+    document.querySelectorAll('.month').forEach(monthDiv => {
+        const monthTitle = monthDiv.querySelector('.month-title').textContent;
+        if (scheduleData.monthBackgrounds[monthTitle]) {
+            monthDiv.style.backgroundColor = scheduleData.monthBackgrounds[monthTitle];
         }
+    });
+}
     }
 }
 
