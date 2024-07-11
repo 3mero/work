@@ -4,666 +4,615 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>جدول العمل</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
-            overflow-y: auto;
-            position: relative;
-            transition: background-color 0.3s;
-            background-color: #BBBCB8;
-            color: #000000 !important;
-        }
-        #change-font-color {
-            background-color: #007BFF;
-            color: white;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin-top: 10px;
-        }
-        #change-font-color:hover {
-            background-color: #0069d9;
-        }
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            z-index: 1;
-        }
-        .shift-schedule,
-        .work-calendar {
-            margin: 20px 0;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            text-align: center;
-        }
-        .calendar-control,
-        .schedule-setup {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 10px 0;
-        }
-        .schedule-setup label,
-        .calendar-control label {
-            margin-left: 10px;
-        }
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        padding: 20px;
+        box-sizing: border-box;
+        overflow-y: auto;
+        position: relative;
+        transition: background-color 0.3s;
+        background-color: var(--body-bg-color, #BBBCB8);
+        color: #000000 !important;
+    }
+    #change-font-color {
+        background-color: #007BFF;
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        margin-top: 10px;
+    }
+    #change-font-color:hover {
+        background-color: #0069d9;
+    }
+    .container {
+        width: 100%;
+        max-width: 1200px;
+        z-index: 1;
+    }
+    .shift-schedule,
+    .work-calendar {
+        margin: 20px 0;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        text-align: center;
+    }
+    .calendar-control,
+    .schedule-setup {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 10px 0;
+    }
+    .schedule-setup label,
+    .calendar-control label {
+        margin-left: 10px;
+    }
+    #calendar {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        justify-content: center;
+    }
+    .month {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 5px;
+        margin-top: 20px;
+        padding: 10px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        position: relative;
+        border: 2px solid #000;
+        background-color: var(--month-bg-color, #444444);
+    }
+    .day,
+    .day-header {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px solid #666;
+        border-radius: 4px;
+        position: relative;
+    }
+    .day-header:nth-child(10),
+    .day-header:nth-child(11) {
+        color: green;
+    }
+    .day-header {
+        font-weight: bold;
+        background-color: #C2C2C2;
+    }
+    .work-day {
+        background-color: #7C7C7C;
+        border: 2px solid #000;
+    }
+    .month-title {
+        grid-column: span 7;
+        text-align: center;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+    .day-off {
+        background-color: #7C7C7C;
+    }
+    .today {
+        border: 2px solid red;
+        font-weight: bold;
+    }
+    .schedule-item {
+        display: flex;
+        align-items: center;
+        margin: 10px 0;
+    }
+    .schedule-item select,
+    .schedule-item input {
+        margin-left: 10px;
+    }
+    .remove-item {
+        margin-left: 10px;
+        color: red;
+        cursor: pointer;
+    }
+    button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    button:hover {
+        background-color: #45a049;
+    }
+    .stats-table {
+        width: 80%;
+        margin-top: 20px;
+        border-collapse: collapse;
+        text-align: center;
+        background-color: var(--stats-table-bg-color, #8D8D8B);
+    }
+    .stats-table th,
+    .stats-table td {
+        border: 2px solid #666;
+        padding: 3px;
+    }
+    .color-button {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: none;
+        margin: 5px;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+    .color-button:hover {
+        transform: scale(1.1);
+    }
+    #toggle-stats {
+        background-color: #73BF3E;
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    .highlight {
+        color: red;
+    }
+    .month-tools {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        z-index: 10;
+        display: flex;
+    }
+    .month-tools button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 20px;
+        padding: 0;
+        margin: 0 5px;
+    }
+    .notes-dropdown {
+        position: absolute;
+        top: 30px;
+        right: 5px;
+        background-color: #333333;
+        border: 1px solid #666;
+        border-radius: 4px;
+        padding: 10px;
+        display: none;
+        z-index: 1000;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+        width: 250px;
+    }
+    .notes-dropdown textarea {
+        width: 100%;
+        margin-bottom: 10px;
+        resize: vertical;
+    }
+    .notes-dropdown button {
+        margin-right: 5px;
+    }
+    #calendar-bg-color {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+    }
+    .pin {
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        color: red;
+        font-size: 12px;
+        display: none;
+        transform: translate(50%, -50%);
+    }
+    @media (max-width: 1200px) {
         #calendar {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            justify-content: center;
+            grid-template-columns: repeat(2, 1fr);
         }
-        .month {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
-            margin-top: 20px;
-            padding: 10px;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-            position: relative;
-            border: 2px solid #000;
+    }
+    @media (max-width: 768px) {
+        #calendar {
+            grid-template-columns: 1fr;
         }
         .day,
         .day-header {
-            width: 40px;
-            height: 40px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border: 1px solid #666;
-            border-radius: 4px;
-            position: relative;
-        }
-        .day-header:nth-child(10),
-        .day-header:nth-child(11) {
-            color: green;
-        }
-        .day-header {
-            font-weight: bold;
-            background-color: #C2C2C2;
-        }
-        .work-day {
-            background-color: #7C7C7C;
-            border: 2px solid #000;
-        }
-        .month-title {
-            grid-column: span 7;
-            text-align: center;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        .day-off {
-            background-color: #7C7C7C;
-        }
-        .today {
-            border: 2px solid red;
-            font-weight: bold;
-        }
-        .schedule-item {
-            display: flex;
-            align-items: center;
-            margin: 10px 0;
-        }
-        .schedule-item select,
-        .schedule-item input {
-            margin-left: 10px;
-        }
-        .remove-item {
-            margin-left: 10px;
-            color: red;
-            cursor: pointer;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        .stats-table {
-            width: 80%;
-            margin-top: 20px;
-            border-collapse: collapse;
-            text-align: center;
-            background-color: #8D8D8B;
-        }
-        .stats-table th,
-        .stats-table td {
-            border: 2px solid #666;
-            padding: 3px;
-        }
-        .color-button {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: none;
-            margin: 5px;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .color-button:hover {
-            transform: scale(1.1);
-        }
-        #toggle-stats {
-            background-color: #73BF3E;
-            color: white;
-            padding: 10px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .highlight {
-            color: red;
-        }
-        .month-tools {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            z-index: 10;
-            display: flex;
-        }
-        .month-tools button {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 20px;
-            padding: 0;
-            margin: 0 5px;
-        }
-        .notes-dropdown {
-            position: absolute;
-            top: 30px;
-            right: 5px;
-            background-color: #333333;
-            border: 1px solid #666;
-            border-radius: 4px;
-            padding: 10px;
-            display: none;
-            z-index: 1000;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
-            width: 250px;
-        }
-        .notes-dropdown textarea {
             width: 100%;
-            margin-bottom: 10px;
-            resize: vertical;
+            height: auto;
         }
-        .notes-dropdown button {
-            margin-right: 5px;
-        }
-        #calendar-bg-color {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-        }
-        .pin {
-            position: absolute;
-            top: 2px;
-            right: 2px;
-            color: red;
-            font-size: 12px;
-            display: none;
-            transform: translate(50%, -50%);
-        }
-        @media (max-width: 1200px) {
-            #calendar {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        @media (max-width: 768px) {
-            #calendar {
-                grid-template-columns: 1fr;
-            }
-            .day,
-            .day-header {
-                width: 100%;
-                height: auto;
-            }
-            .month-number {
-                font-size: 0.8em;
-                color: #2C2C2C;
-                text-align: center;
-                margin-bottom: 5px;
-                font-weight: bold;
-                background-color: #2C2C2C;
-            }
-        }
-        /* مظهر صفحة جميع الملاحظات */
-        #all-notes-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            overflow-y: auto;
-        }
-        #all-notes-content {
-            background: #444444;
-            padding: 20px;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 1100px;
-            max-height: 90%;
-            overflow-y: auto;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-            position: relative;
-        }
-        .note-header {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr 3fr;
-            gap: 10px;
-            align-items: center;
+        .month-number {
+            font-size: 0.8em;
+            color: #2C2C2C;
+            text-align: center;
+            margin-bottom: 5px;
             font-weight: bold;
-            border-bottom: 2px solid #666;
-            margin-bottom: 10px;
-            background: #555555;
-            padding: 10px;
+            background-color: #2C2C2C;
         }
-        .note-item {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr 3fr;
-            gap: 10px;
-            align-items: center;
-            border-bottom: 1px solid #666;
-            padding: 10px;
-            transition: background-color 0.3s;
-        }
-        .note-item:hover {
-            background-color: #666666;
-        }
-        .note-item textarea {
-            width: 100%;
-            resize: vertical;
-            padding: 5px;
-            border-radius: 4px;
-            border: 1px solid #888;
-            font-size: 14px;
-            background-color: #555555;
-            color: #FFFFFF;
-        }
-        .note-actions {
-            text-align: right;
-            display: flex;
-            justify-content: space-around;
-        }
-        .note-actions button {
-            padding: 5px 10px;
-            border-radius: 4px;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .note-actions .save-note {
-            background-color: #4CAF50;
-            color: white;
-        }
-        .note-actions .save-note:hover {
-            background-color: #45a049;
-        }
-        .note-actions .delete-note {
-            background-color: #f44336;
-            color: white;
-        }
-        .note-actions .delete-note:hover {
-            background-color: #e53935;
-        }
-        #close-notes {
-            background-color: #f44336;
-            color: white;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            position: absolute;
-            top: 20px;
-            right: 20px;
-        }
-        #close-notes:hover {
-            background-color: #e53935;
-        }
-        #change-bg-color {
-            background-color: #007BFF;
-            color: white;
-            padding: 2px;
-            border: none;
-            border-radius: 1px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin-top: 2px;
-        }
-        #change-bg-color:hover {
-            background-color: #0069d9;
-        }
-        #color-picker {
-            display: none;
-        }
-        #generate-schedule {
-            background-color: #D32F2F;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        #generate-schedule:hover {
-            background-color: #B71C1C;
-       }
-        /* صندوق أحمر للموظف وتاريخ البدء */
-        .employee-info {
-            background-color: #D32F2F;
-            color: white;
-            padding: 10px;
-            margin-top: 20px;
-            border-radius: 5px;
-            text-align: center;
-        }
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        .modal-content {
-            background: #444444;
-            padding: 20px;
-            border-radius: 5px;
-            width: 80%;
-            max-width: 500px;
-            text-align: center;
-        }
-        .modal-content label {
-            display: block;
-            margin: 10px 0;
-            text-align: left;
-        }
-        .modal-content input[type="color"] {
-            margin-left: 10px;
-        }
-        .button-label {
-            position: relative;
-            display: inline-block;
-            cursor: pointer;
-            background-color: #007BFF;
-            color: white;
-            padding: 5px 10px;
-            border: none;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-            margin-left: 5px;
-            text-align: center;
-        }
-        .button-label:hover {
-            background-color: #0069d9;
-        } 
-        .button-label input[type="color"] {
-            display: none;
-        }
-        .modal-content {
-            background: #555555;
-            padding: 10px;
-            border-radius: 10px;
-            width: 30%;
-            max-width: 600px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .settings-group {
-            margin-bottom: 20px;
-            border: 1px solid #888;
-            padding: 15px;
-            border-radius: 5px;
-        }
-        .settings-group h4 {
-            margin-top: 0;
-            margin-bottom: 15px;
-            color: #CCCCCC;
-        }
-        .color-picker-container {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        .color-picker-container label {
-            flex: 1;
-            margin-right: 10px;
-        }
-        .color-picker-container input[type="color"] {
-            width: 40px;
-            height: 40px;
-            padding: 0;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-        }
-        .color-preview {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            margin-left: 10px;
-            border: 1px solid #888;
-        }
-        .button-group {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 20px;
-        }
-        .button-group button {
-            margin-left: 10px;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-         #close-bg-settings {
-            background-color: #2196F3;
-            color: white;
-        }
-        .button-group button:hover {
-            opacity: 0.9;
-        }
-        #bg-settings-modal {
-            display: none;
-        }
-        #delete-all-notes:hover {
-            background-color: #e53935;
-        }
-        .saved-schedules-container {
-            position: relative;
-        }
-        .saved-schedules-button {
-            background-color: #007BFF;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .saved-schedules-button:hover {
-            background-color: #0069d9;
-        }
-        .saved-schedules-dropdown {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            width: 300px;
-            max-height: 400px;
-            overflow-y: auto;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            padding: 10px;
-            z-index: 1000;
-        }
-        .saved-schedules-dropdown h3 {
-            text-align: center;
-            color: white;
-        }
-        .saved-schedule-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #555555;
-            margin: 5px 0;
-            padding: 5px;
-            border-radius: 4px;
-            color: white;
-            cursor: pointer;
-        }
-        .delete-saved-schedule {
-            background-color: red;
-            border: none;
-            color: white;
-            border-radius: 4px;
-            cursor: pointer;
-            padding: 2px 5px;
-        }
+    }
+    /* مظهر صفحة جميع الملاحظات */
+    #all-notes-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        overflow-y: auto;
+    }
+    #all-notes-content {
+        background: #444444;
+        padding: 20px;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 1100px;
+        max-height: 90%;
+        overflow-y: auto;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        position: relative;
+    }
+    .note-header {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr 3fr;
+        gap: 10px;
+        align-items: center;
+        font-weight: bold;
+        border-bottom: 2px solid #666;
+        margin-bottom: 10px;
+        background: #555555;
+        padding: 10px;
+    }
+    .note-item {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr 3fr;
+        gap: 10px;
+        align-items: center;
+        border-bottom: 1px solid #666;
+        padding: 10px;
+        transition: background-color 0.3s;
+    }
+    .note-item:hover {
+        background-color: #666666;
+    }
+    .note-item textarea {
+        width: 100%;
+        resize: vertical;
+        padding: 5px;
+        border-radius: 4px;
+        border: 1px solid #888;
+        font-size: 14px;
+        background-color: #555555;
+        color: #FFFFFF;
+    }
+    .note-actions {
+        text-align: right;
+        display: flex;
+        justify-content: space-around;
+    }
+    .note-actions button {
+        padding: 5px 10px;
+        border-radius: 4px;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    .note-actions .save-note {
+        background-color: #4CAF50;
+        color: white;
+    }
+    .note-actions .save-note:hover {
+        background-color: #45a049;
+    }
+    .note-actions .delete-note {
+        background-color: #f44336;
+        color: white;
+    }
+    .note-actions .delete-note:hover {
+        background-color: #e53935;
+    }
+    #close-notes {
+        background-color: #f44336;
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        position: absolute;
+        top: 20px;
+        right: 20px;
+    }
+    #close-notes:hover {
+        background-color: #e53935;
+    }
+    #change-bg-color {
+        background-color: #007BFF;
+        color: white;
+        padding: 2px;
+        border: none;
+        border-radius: 1px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        margin-top: 2px;
+    }
+    #change-bg-color:hover {
+        background-color: #0069d9;
+    }
+    #color-picker {
+        display: none;
+    }
+    #generate-schedule {
+        background-color: #D32F2F;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    #generate-schedule:hover {
+        background-color: #B71C1C;
+    }
+    /* صندوق أحمر للموظف وتاريخ البدء */
+    .employee-info {
+        background-color: #D32F2F;
+        color: white;
+        padding: 10px;
+        margin-top: 20px;
+        border-radius: 5px;
+        text-align: center;
+    }
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+    .modal-content {
+        background: #444444;
+        padding: 20px;
+        border-radius: 5px;
+        width: 80%;
+        max-width: 500px;
+        text-align: center;
+    }
+    .modal-content label {
+        display: block;
+        margin: 10px 0;
+        text-align: left;
+    }
+    .modal-content input[type="color"] {
+        margin-left: 10px;
+    }
+    .button-label {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+        background-color: #007BFF;
+        color: white;
+        padding: 5px 10px;
+        border: none;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+        margin-left: 5px;
+        text-align: center;
+    }
+    .button-label:hover {
+        background-color: #0069d9;
+    } 
+    .button-label input[type="color"] {
+        display: none;
+    }
+    .modal-content {
+        background: #555555;
+        padding: 10px;
+        border-radius: 10px;
+        width: 30%;
+        max-width: 600px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .settings-group {
+        margin-bottom: 20px;
+        border: 1px solid #888;
+        padding: 15px;
+        border-radius: 5px;
+    }
+    .settings-group h4 {
+        margin-top: 0;
+        margin-bottom: 15px;
+        color: #CCCCCC;
+    }
+    .color-picker-container {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    .color-picker-container label {
+        flex: 1;
+        margin-right: 10px;
+    }
+    .color-picker-container input[type="color"] {
+        width: 40px;
+        height: 40px;
+        padding: 0;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+    }
+    .color-preview {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        margin-left: 10px;
+        border: 1px solid #888;
+    }
+    .button-group {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 20px;
+    }
+    .button-group button {
+        margin-left: 10px;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    #close-bg-settings {
+        background-color: #2196F3;
+        color: white;
+    }
+    .button-group button:hover {
+        opacity: 0.9;
+    }
+    #bg-settings-modal {
+        display: none;
+    }
+    #delete-all-notes:hover {
+        background-color: #e53935;
+    }
+    .saved-schedules-container {
+        position: relative;
+    }
+    .saved-schedules-button {
+        background-color: #007BFF;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    .saved-schedules-button:hover {
+        background-color: #0069d9;
+    }
+    .saved-schedules-dropdown {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 300px;
+        max-height: 400px;
+        overflow-y: auto;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        padding: 10px;
+        z-index: 1000;
+    }
+    .saved-schedules-dropdown h3 {
+        text-align: center;
+        color: white;
+    }
+    .saved-schedule-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #555555;
+        margin: 5px 0;
+        padding: 5px;
+        border-radius: 4px;
+        color: white;
+        cursor: pointer;
+    }
+    .delete-saved-schedule {
+        background-color: red;
+        border: none;
+        color: white;
+        border-radius: 4px;
+        cursor: pointer;
+        padding: 2px 5px;
+    }
 
-        /* Styles for the modal */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1001;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-        }
-        .modal-content {
-            background-color: #fefefe;
-            margin: auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 400px;
-            border-radius: 10px;
-            text-align: center;
-        }
-        .modal-content input {
-            margin: 10px 0;
-            padding: 10px;
-            width: 100%;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        .modal-content button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .modal-content button:hover {
-            background-color: #45a049;
-        }
-              .modal {
-            display: none;
-            position: fixed;
-            z-index: 1001;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-        }
-        .modal-content {
-            background-color: #fefefe;
-            margin: auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 400px;
-            border-radius: 10px;
-            text-align: center;
-            background: #333;
-            color: white;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        .modal-content button {
-            background-color: #007BFF;
-            color: white;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin: 10px 0;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .modal-content button:hover {
-            background-color: #0056b3;
-        }
-        .modal-content button span {
-            margin-left: 10px;
-        }
-        #close-reset-modal {
-            background-color: #f44336;
-        }
-        #close-reset-modal:hover {
-            background-color: #d32f2f;
-        }
-      .notes-dropdown .close-notes {
-    position: absolute;
-    top: 1px;
-    right: 1px;
-    background-color: #f44336;
-    color: white;
-    border: none;
-    border-radius: 20%;
-    cursor: pointer;
-    width: 5px;
-    height: 1px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.notes-dropdown .close-notes:hover {
-    background-color: #d32f2f;
-}
-
+    /* Styles for the modal */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1001;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+    }
+    .modal-content {
+        background-color: #fefefe;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 400px;
+        border-radius: 10px;
+        text-align: center;
+    }
+    .modal-content input {
+        margin: 10px 0;
+        padding: 10px;
+        width: 100%;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    .modal-content button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    .modal-content button:hover {
+        background-color: #45a049;
+    }
+    .notes-dropdown .close-notes {
+        position: absolute;
+        top: 1px;
+        right: 1px;
+        background-color: #f44336;
+        color: white;
+        border: none;
+        border-radius: 20%;
+        cursor: pointer;
+        width: 5px;
+        height: 1px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .notes-dropdown .close-notes:hover {
+        background-color: #d32f2f;
+    }
 </style>
+
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.5/dist/html2canvas.min.js" async></script>
 </head>
 <body>
@@ -885,8 +834,8 @@
             newItem.className = 'schedule-item';
             newItem.innerHTML = `
                 <select class="day-type">
-                    <option value="work">أيام العمل👷🏼</option>
-                    <option value="off">أيام العطلة🏖️</option>
+                    <option value="work">أيام العمل</option>
+                    <option value="off">أيام العطلة</option>
                 </select>
                 <input type="number" class="days-count" value="1" min="1" max="99">
                 <input type="color" class="day-color" value="#FFFFFF">
@@ -968,7 +917,6 @@
                 const notesDropdown = document.createElement('div');
                 notesDropdown.className = 'notes-dropdown';
                 notesDropdown.innerHTML = `
-                    <button class="close-notes">X</button>
                     <textarea placeholder="أدخل ملاحظاتك هنا"></textarea>
                     <button class="save-notes">حفظ</button>
                     <button class="edit-notes">تعديل</button>
@@ -1097,21 +1045,15 @@
                         saveNotes();
                     }
                 });
-
-                const closeNotesButton = notesDropdown.querySelector('.close-notes');
-                closeNotesButton.addEventListener('click', function() {
-                    notesDropdown.style.display = 'none';
-                });
             }
-            loadPinsFromLocal(); 
-            loadNotesFromLocal(); 
-            loadMonthBackgrounds();
+            loadPinsFromLocal(); // تحميل الدبابيس عند إنشاء الجداول
+            loadNotesFromLocal(); // تحميل الملاحظات عند إنشاء الجداول
+            loadMonthBackgrounds(); // تحميل الخلفيات عند إنشاء الجداول
         }
-
 
         document.getElementById('generate-schedule').addEventListener('click', function () {
             const startDate = document.getElementById('start-date').value;
-            const numberOfMonths = parseInt(document.getElementById('month-count').value); 
+            const numberOfMonths = parseInt(document.getElementById('month-count').value); // الحصول على عدد الأشهر المحدد
             const scheduleItems = document.querySelectorAll('.schedule-item');
             const schedule = [];
 
@@ -1122,7 +1064,7 @@
                 schedule.push({ dayType, daysCount, dayColor });
             });
 
-            generateCalendar(startDate, schedule, numberOfMonths); 
+            generateCalendar(startDate, schedule, numberOfMonths); // تمرير عدد الأشهر المحدد
             saveScheduleToLocal();
             saveBackgroundSettings();
             saveNotes();
@@ -1173,6 +1115,33 @@
             document.getElementById('bg-settings-modal').style.display = 'none';
         });
 
+        document.getElementById('page-bg-color-picker').addEventListener('input', function () {
+            document.body.style.backgroundColor = this.value;
+            saveBackgroundSettings();
+        });
+
+        document.getElementById('shift-schedule-bg-color-picker').addEventListener('input', function () {
+            document.querySelector('.shift-schedule').style.backgroundColor = this.value;
+            saveBackgroundSettings();
+        });
+
+        document.getElementById('stats-table-bg-color-picker').addEventListener('input', function () {
+            document.getElementById('stats-table').style.backgroundColor = this.value;
+            saveBackgroundSettings();
+        });
+
+        document.getElementById('work-calendar-bg-color-picker').addEventListener('input', function () {
+            document.querySelector('.work-calendar').style.backgroundColor = this.value;
+            saveBackgroundSettings();
+        });
+
+        document.getElementById('month-bg-color-picker').addEventListener('input', function () {
+            document.querySelectorAll('.month').forEach(month => {
+                month.style.backgroundColor = this.value;
+            });
+            saveBackgroundSettings();
+        });
+
         function saveScheduleToLocal() {
             const startDate = document.getElementById('start-date').value;
             const scheduleItems = document.querySelectorAll('.schedule-item');
@@ -1200,12 +1169,6 @@
             };
 
             localStorage.setItem('workSchedule', JSON.stringify(scheduleData));
-
-            // Save month backgrounds separately
-            const savedMonthBackgrounds = JSON.parse(localStorage.getItem('savedMonthBackgrounds')) || {};
-            const scheduleName = document.getElementById('employee-name').textContent.split(': ')[1];
-            savedMonthBackgrounds[scheduleName] = monthBackgrounds;
-            localStorage.setItem('savedMonthBackgrounds', JSON.stringify(savedMonthBackgrounds));
         }
 
         function saveBackgroundSettings() {
@@ -1279,8 +1242,8 @@
                     newItem.className = 'schedule-item';
                     newItem.innerHTML = `
                         <select class="day-type">
-                            <option value="work" ${item.dayType === 'work' ? 'selected' : ''}>أيام العمل👷🏼</option>
-                            <option value="off" ${item.dayType === 'off' ? 'selected' : ''}>أيام العطلة🏖️</option>
+                            <option value="work" ${item.dayType === 'work' ? 'selected' : ''}>أيام العمل</option>
+                            <option value="off" ${item.dayType === 'off' ? 'selected' : ''}>أيام العطلة</option>
                         </select>
                         <input type="number" class="days-count" value="${item.daysCount}" min="1" max="99">
                         <input type="color" class="day-color" value="${item.dayColor}">
@@ -1297,10 +1260,13 @@
                 generateCalendar(scheduleData.startDate, scheduleData.schedule);
                 loadPinsFromLocal();
 
-                const savedMonthBackgrounds = JSON.parse(localStorage.getItem('savedMonthBackgrounds')) || {};
-                const scheduleName = scheduleData.employeeName;
-                if (savedMonthBackgrounds[scheduleName]) {
-                    applyMonthBackgrounds(savedMonthBackgrounds[scheduleName]);
+                if (scheduleData.monthBackgrounds) {
+                    document.querySelectorAll('.month').forEach(monthDiv => {
+                        const monthTitle = monthDiv.querySelector('.month-title').textContent;
+                        if (scheduleData.monthBackgrounds[monthTitle]) {
+                            monthDiv.style.backgroundColor = scheduleData.monthBackgrounds[monthTitle];
+                        }
+                    });
                 }
 
                 if (scheduleData.employeeName && scheduleData.employeeStartDate) {
@@ -1406,42 +1372,6 @@
             }
         }
 
-        document.getElementById('reset-page').addEventListener('click', function() {
-            document.getElementById('reset-modal').style.display = 'flex';
-        });
-
-        document.getElementById('close-reset-modal').addEventListener('click', function() {
-            document.getElementById('reset-modal').style.display = 'none';
-        });
-
-        document.getElementById('delete-all-pins').addEventListener('click', function() {
-            if (confirm('هل أنت متأكد من حذف جميع الدبابيس؟')) {
-                localStorage.removeItem('pinnedDays');
-                document.querySelectorAll('.pin').forEach(pin => {
-                    pin.style.display = 'none';
-                });
-                alert('تم حذف جميع الدبابيس');
-            }
-        });
-
-        document.getElementById('delete-all-records').addEventListener('click', function() {
-            if (confirm('هل أنت متأكد من حذف السجل بالكامل؟')) {
-                localStorage.removeItem('savedSchedules');
-                alert('تم حذف السجل بالكامل');
-            }
-        });
-
-        document.getElementById('reset-start-date').addEventListener('click', function() {
-            document.getElementById('start-date').value = '';
-            alert('تم إعادة تهيئة تاريخ البدء');
-        });
-
-        document.getElementById('reset-all').addEventListener('click', function() {
-            if (confirm('هل أنت متأكد من إعادة الصفحة بالكامل لوضعها الافتراضي؟')) {
-                localStorage.clear();
-                location.reload();
-            }
-        });
 
         document.getElementById('show-all-notes').addEventListener('click', function () {
             const notesList = document.getElementById('notes-list');
@@ -1536,26 +1466,33 @@
 
         function applyBackgroundSettings() {
             const backgroundSettings = JSON.parse(localStorage.getItem('backgroundSettings')) || {};
-            if (backgroundSettings.pageBg) {
-                document.body.style.backgroundColor = backgroundSettings.pageBg;
-            }
-            if (backgroundSettings.shiftScheduleBg) {
-                document.querySelector('.shift-schedule').style.backgroundColor = backgroundSettings.shiftScheduleBg;
-            }
-            if (backgroundSettings.statsTableBg) {
-                document.getElementById('stats-table').style.backgroundColor = backgroundSettings.statsTableBg;
-            }
-            if (backgroundSettings.workCalendarBg) {
-                document.querySelector('.work-calendar').style.backgroundColor = backgroundSettings.workCalendarBg;
-            }
-            if (backgroundSettings.monthBgs) {
-                document.querySelectorAll('.month').forEach(month => {
-                    const monthTitle = month.querySelector('.month-title').textContent;
-                    if (backgroundSettings.monthBgs[monthTitle]) {
-                        month.style.backgroundColor = backgroundSettings.monthBgs[monthTitle];
-                    }
-                });
-            }
+            document.body.style.backgroundColor = backgroundSettings.pageBg || '#2C2C2C';
+            document.querySelector('.shift-schedule').style.backgroundColor = backgroundSettings.shiftScheduleBg || '#3A3A3A';
+            document.getElementById('stats-table').style.backgroundColor = backgroundSettings.statsTableBg || '#3A3A3A';
+            document.querySelector('.work-calendar').style.backgroundColor = backgroundSettings.workCalendarBg || '#3A3A3A';
+
+            document.querySelectorAll('.month').forEach(month => {
+                const monthTitle = month.querySelector('.month-title').textContent;
+                month.style.backgroundColor = backgroundSettings.monthBgs[monthTitle] || '#444444';
+            });
+        }
+
+        function resetBackgrounds() {
+            document.body.style.backgroundColor = '#FFFFFF';
+            document.querySelector('.shift-schedule').style.backgroundColor = '#FFFFFF';
+            document.getElementById('stats-table').style.backgroundColor = '#FFFFFF';
+            document.querySelector('.work-calendar').style.backgroundColor = '#FFFFFF';
+            document.querySelectorAll('.month').forEach(month => {
+                month.style.backgroundColor = '#FFFFFF';
+            });
+
+            document.getElementById('page-bg-color-picker').value = '#FFFFFF';
+            document.getElementById('shift-schedule-bg-color-picker').value = '#FFFFFF';
+            document.getElementById('stats-table-bg-color-picker').value = '#FFFFFF';
+            document.getElementById('work-calendar-bg-color-picker').value = '#FFFFFF';
+            document.getElementById('month-bg-color-picker').value = '#FFFFFF';
+
+            saveBackgroundSettings();
         }
 
         document.getElementById('delete-all-notes').addEventListener('click', function () {
@@ -1582,7 +1519,7 @@
 
         document.getElementById('save-schedule-confirm').addEventListener('click', function () {
             const scheduleName = document.getElementById('schedule-name').value.trim();
-            const startDate = document.getElementById('start-date').value;
+            const startDate = document.getElementById('start-date').value; // استخدم تاريخ أول يوم بدء العمل
 
             if (!scheduleName) {
                 alert('يرجى إدخال اسم السجل');
@@ -1590,12 +1527,12 @@
             }
 
             const scheduleData = JSON.parse(localStorage.getItem('workSchedule')) || {};
-            scheduleData.startDate = startDate;
+            scheduleData.startDate = startDate; // حفظ تاريخ أول يوم بدء العمل في البيانات
             const savedSchedules = JSON.parse(localStorage.getItem('savedSchedules')) || [];
             const scheduleId = Date.now();
             const scheduleRecord = {
                 id: scheduleId,
-                name: `${scheduleName} - ${startDate}`,
+                name: `${scheduleName} - ${startDate}`, // احفظ الاسم مع تاريخ أول يوم بدء العمل
                 data: scheduleData,
                 startDate: startDate,
                 createdDate: new Date().toLocaleString('ar-MA')
@@ -1642,22 +1579,16 @@
                 localStorage.setItem('workSchedule', JSON.stringify(schedule.data));
                 document.getElementById('start-date').value = schedule.startDate;
 
+                // إعادة تحميل الجدول والبيانات المحفوظة
                 loadScheduleFromLocal();
-
-                const savedMonthBackgrounds = JSON.parse(localStorage.getItem('savedMonthBackgrounds')) || {};
-                if (savedMonthBackgrounds[schedule.name]) {
-                    applyMonthBackgrounds(savedMonthBackgrounds[schedule.name]);
-                }
-
                 loadNotesFromLocal();
                 loadPinsFromLocal();
+                applyMonthBackgrounds();
 
-                const employeeInfo = document.getElementById('employee-info');
-                employeeInfo.innerHTML = `
-                    <p id="employee-name" style="background-color: red; color: white;">اسم السجل: ${schedule.name}</p>
-                    <p id="employee-start-date">تاريخ أول يوم عمل: ${schedule.startDate}</p>
-                `;
-                employeeInfo.style.display = 'block';
+                // عرض اسم السجل وتاريخ أول يوم عمل أعلى الشاشة
+                document.getElementById('employee-name').textContent = `اسم السجل: ${schedule.name}`;
+                document.getElementById('employee-start-date').textContent = `تاريخ أول يوم عمل: ${schedule.startDate}`;
+                document.getElementById('employee-info').style.display = 'block';
             }
         }
 
@@ -1668,7 +1599,9 @@
             displaySavedSchedules();
         }
 
-        function applyMonthBackgrounds(monthBackgrounds) {
+        function applyMonthBackgrounds() {
+            const savedSchedule = JSON.parse(localStorage.getItem('workSchedule')) || {};
+            const monthBackgrounds = savedSchedule.monthBackgrounds || {};
             document.querySelectorAll('.month').forEach(monthDiv => {
                 const monthTitle = monthDiv.querySelector('.month-title').textContent;
                 if (monthBackgrounds[monthTitle]) {
@@ -1697,22 +1630,83 @@
             const dropdown = document.getElementById('saved-schedules-dropdown');
             dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
         });
-
-        document.querySelectorAll('.notes-dropdown .close-notes').forEach(button => {
-            button.addEventListener('click', function() {
-                const notesDropdown = this.parentElement;
-                notesDropdown.style.display = 'none';
-            });
+      
+              document.getElementById('reset-page').addEventListener('click', function() {
+            document.getElementById('reset-modal').style.display = 'flex';
         });
 
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.notes-dropdown .close-notes').forEach(button => {
-                button.addEventListener('click', function() {
-                    const notesDropdown = this.parentElement;
-                    notesDropdown.style.display = 'none';
+        document.getElementById('close-reset-modal').addEventListener('click', function() {
+            document.getElementById('reset-modal').style.display = 'none';
+        });
+
+        document.getElementById('delete-all-pins').addEventListener('click', function() {
+            if (confirm('هل أنت متأكد من حذف جميع الدبابيس؟')) {
+                localStorage.removeItem('pinnedDays');
+                document.querySelectorAll('.pin').forEach(pin => {
+                    pin.style.display = 'none';
                 });
-            });
+                alert('تم حذف جميع الدبابيس');
+            }
         });
+
+        document.getElementById('delete-all-records').addEventListener('click', function() {
+            if (confirm('هل أنت متأكد من حذف السجل بالكامل؟')) {
+                localStorage.removeItem('savedSchedules');
+                alert('تم حذف السجل بالكامل');
+            }
+        });
+
+        document.getElementById('reset-start-date').addEventListener('click', function() {
+            document.getElementById('start-date').value = '';
+            alert('تم إعادة تهيئة تاريخ البدء');
+        });
+
+        document.getElementById('reset-all').addEventListener('click', function() {
+            if (confirm('هل أنت متأكد من إعادة الصفحة بالكامل لوضعها الافتراضي؟')) {
+                localStorage.clear();
+                location.reload();
+            }
+        });
+      
+      document.addEventListener('DOMContentLoaded', function() {
+    // تحميل الإعدادات المحفوظة من التخزين المحلي
+    const bodyBgColor = localStorage.getItem('bodyBgColor') || '#BBBCB8';
+    const statsTableBgColor = localStorage.getItem('statsTableBgColor') || '#8D8D8B';
+    const monthBgColor = localStorage.getItem('monthBgColor') || '#444444';
+
+    document.documentElement.style.setProperty('--body-bg-color', bodyBgColor);
+    document.documentElement.style.setProperty('--stats-table-bg-color', statsTableBgColor);
+    document.documentElement.style.setProperty('--month-bg-color', monthBgColor);
+
+    // تحميل الجدول والبيانات المحفوظة
+    loadScheduleFromLocal();
+
+    // تحميل الخلفيات المحفوظة
+    loadBackgroundSettings();
+
+    // تحميل الملاحظات المحفوظة
+    loadNotesFromLocal();
+
+    // تحميل الدبابيس المحفوظة
+    loadPinsFromLocal();
+
+    // إعداد الأحداث الخاصة بحفظ الخلفيات
+    document.getElementById('page-bg-color-picker').addEventListener('input', function() {
+        document.documentElement.style.setProperty('--body-bg-color', this.value);
+        localStorage.setItem('bodyBgColor', this.value);
+    });
+
+    document.getElementById('stats-table-bg-color-picker').addEventListener('input', function() {
+        document.documentElement.style.setProperty('--stats-table-bg-color', this.value);
+        localStorage.setItem('statsTableBgColor', this.value);
+    });
+
+    document.getElementById('month-bg-color-picker').addEventListener('input', function() {
+        document.documentElement.style.setProperty('--month-bg-color', this.value);
+        localStorage.setItem('monthBgColor', this.value);
+    });
+});
+
     </script>
 </body>
 </html>
