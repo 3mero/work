@@ -4,620 +4,604 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>جدول العمل</title>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        margin: 0;
-        padding: 20px;
-        box-sizing: border-box;
-        overflow-y: auto;
-        position: relative;
-        transition: background-color 0.3s;
-        background-color: var(--body-bg-color, #BBBCB8);
-        color: #000000 !important;
-    }
-    #change-font-color {
-        background-color: #007BFF;
-        color: white;
-        padding: 10px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-        margin-top: 10px;
-    }
-    #change-font-color:hover {
-        background-color: #0069d9;
-    }
-    .container {
-        width: 100%;
-        max-width: 1200px;
-        z-index: 1;
-    }
-    .shift-schedule,
-    .work-calendar {
-        margin: 20px 0;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        text-align: center;
-    }
-    .calendar-control,
-    .schedule-setup {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 10px 0;
-    }
-    .schedule-setup label,
-    .calendar-control label {
-        margin-left: 10px;
-    }
-    #calendar {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 20px;
-        justify-content: center;
-    }
-    .month {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        gap: 5px;
-        margin-top: 20px;
-        padding: 10px;
-        box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-        position: relative;
-        border: 2px solid #000;
-        background-color: var(--month-bg-color, #444444);
-    }
-    .day,
-    .day-header {
-        width: 40px;
-        height: 40px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border: 1px solid #666;
-        border-radius: 4px;
-        position: relative;
-    }
-    .day-header:nth-child(10),
-    .day-header:nth-child(11) {
-        color: green;
-    }
-    .day-header {
-        font-weight: bold;
-        background-color: #C2C2C2;
-    }
-    .work-day {
-        background-color: #7C7C7C;
-        border: 2px solid #000;
-    }
-    .month-title {
-        grid-column: span 7;
-        text-align: center;
-        font-weight: bold;
-        margin-bottom: 10px;
-    }
-    .day-off {
-        background-color: #7C7C7C;
-    }
-    .today {
-        border: 2px solid red;
-        font-weight: bold;
-    }
-    .schedule-item {
-        display: flex;
-        align-items: center;
-        margin: 10px 0;
-    }
-    .schedule-item select,
-    .schedule-item input {
-        margin-left: 10px;
-    }
-    .remove-item {
-        margin-left: 10px;
-        color: red;
-        cursor: pointer;
-    }
-    button {
-        background-color: #4CAF50;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-    button:hover {
-        background-color: #45a049;
-    }
-    .stats-table {
-        width: 80%;
-        margin-top: 20px;
-        border-collapse: collapse;
-        text-align: center;
-        background-color: var(--stats-table-bg-color, #8D8D8B);
-    }
-    .stats-table th,
-    .stats-table td {
-        border: 2px solid #666;
-        padding: 3px;
-    }
-    .color-button {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: none;
-        margin: 5px;
-        cursor: pointer;
-        transition: transform 0.2s;
-    }
-    .color-button:hover {
-        transform: scale(1.1);
-    }
-    #toggle-stats {
-        background-color: #73BF3E;
-        color: white;
-        padding: 10px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-    .highlight {
-        color: red;
-    }
-    .month-tools {
-        position: absolute;
-        top: 5px;
-        right: 5px;
-        z-index: 10;
-        display: flex;
-    }
-    .month-tools button {
-        background: none;
-        border: none;
-        cursor: pointer;
-        font-size: 20px;
-        padding: 0;
-        margin: 0 5px;
-    }
-    .notes-dropdown {
-        position: absolute;
-        top: 30px;
-        right: 5px;
-        background-color: #333333;
-        border: 1px solid #666;
-        border-radius: 4px;
-        padding: 10px;
-        display: none;
-        z-index: 1000;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
-        width: 250px;
-    }
-    .notes-dropdown textarea {
-        width: 100%;
-        margin-bottom: 10px;
-        resize: vertical;
-    }
-    .notes-dropdown button {
-        margin-right: 5px;
-    }
-    #calendar-bg-color {
-        position: absolute;
-        top: 5px;
-        right: 5px;
-    }
-    .pin {
-        position: absolute;
-        top: 2px;
-        right: 2px;
-        color: red;
-        font-size: 12px;
-        display: none;
-        transform: translate(50%, -50%);
-    }
-    @media (max-width: 1200px) {
-        #calendar {
-            grid-template-columns: repeat(2, 1fr);
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            position: relative;
+            transition: background-color 0.3s;
+            background-color: #2C2C2C;
+            color: #000000 !important;
         }
-    }
-    @media (max-width: 768px) {
+        #change-font-color {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+        #change-font-color:hover {
+            background-color: #0069d9;
+        }
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            z-index: 1;
+        }
+        .shift-schedule,
+        .work-calendar {
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+        .calendar-control,
+        .schedule-setup {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+        }
+        .schedule-setup label,
+        .calendar-control label {
+            margin-left: 10px;
+        }
         #calendar {
-            grid-template-columns: 1fr;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            justify-content: center;
+        }
+        .month {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-top: 20px;
+            padding: 10px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+            position: relative;
+            border: 2px solid #000;
         }
         .day,
         .day-header {
-            width: 100%;
-            height: auto;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #666;
+            border-radius: 4px;
+            position: relative;
         }
-        .month-number {
-            font-size: 0.8em;
-            color: #2C2C2C;
-            text-align: center;
-            margin-bottom: 5px;
+        .day-header:nth-child(10),
+        .day-header:nth-child(11) {
+            color: green;
+        }
+        .day-header {
             font-weight: bold;
-            background-color: #2C2C2C;
+            background-color: #C2C2C2;
         }
-    }
-    /* مظهر صفحة جميع الملاحظات */
-    #all-notes-modal {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.8);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-        overflow-y: auto;
-    }
-    #all-notes-content {
-        background: #444444;
-        padding: 20px;
-        border-radius: 8px;
-        width: 90%;
-        max-width: 1100px;
-        max-height: 90%;
-        overflow-y: auto;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-        position: relative;
-    }
-    .note-header {
-        display: grid;
-        grid-template-columns: 2fr 1fr 1fr 1fr 3fr;
-        gap: 10px;
-        align-items: center;
-        font-weight: bold;
-        border-bottom: 2px solid #666;
-        margin-bottom: 10px;
-        background: #555555;
-        padding: 10px;
-    }
-    .note-item {
-        display: grid;
-        grid-template-columns: 2fr 1fr 1fr 1fr 3fr;
-        gap: 10px;
-        align-items: center;
-        border-bottom: 1px solid #666;
-        padding: 10px;
-        transition: background-color 0.3s;
-    }
-    .note-item:hover {
-        background-color: #666666;
-    }
-    .note-item textarea {
-        width: 100%;
-        resize: vertical;
-        padding: 5px;
-        border-radius: 4px;
-        border: 1px solid #888;
-        font-size: 14px;
-        background-color: #555555;
-        color: #FFFFFF;
-    }
-    .note-actions {
-        text-align: right;
-        display: flex;
-        justify-content: space-around;
-    }
-    .note-actions button {
-        padding: 5px 10px;
-        border-radius: 4px;
-        border: none;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
-    .note-actions .save-note {
-        background-color: #4CAF50;
-        color: white;
-    }
-    .note-actions .save-note:hover {
-        background-color: #45a049;
-    }
-    .note-actions .delete-note {
-        background-color: #f44336;
-        color: white;
-    }
-    .note-actions .delete-note:hover {
-        background-color: #e53935;
-    }
-    #close-notes {
-        background-color: #f44336;
-        color: white;
-        padding: 10px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-        position: absolute;
-        top: 20px;
-        right: 20px;
-    }
-    #close-notes:hover {
-        background-color: #e53935;
-    }
-    #change-bg-color {
-        background-color: #007BFF;
-        color: white;
-        padding: 2px;
-        border: none;
-        border-radius: 1px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-        margin-top: 2px;
-    }
-    #change-bg-color:hover {
-        background-color: #0069d9;
-    }
-    #color-picker {
-        display: none;
-    }
-    #generate-schedule {
-        background-color: #D32F2F;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-    #generate-schedule:hover {
-        background-color: #B71C1C;
-    }
-    /* صندوق أحمر للموظف وتاريخ البدء */
-    .employee-info {
-        background-color: #D32F2F;
-        color: white;
-        padding: 10px;
-        margin-top: 20px;
-        border-radius: 5px;
-        text-align: center;
-    }
-    .modal {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.7);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-    }
-    .modal-content {
-        background: #444444;
-        padding: 20px;
-        border-radius: 5px;
-        width: 80%;
-        max-width: 500px;
-        text-align: center;
-    }
-    .modal-content label {
-        display: block;
-        margin: 10px 0;
-        text-align: left;
-    }
-    .modal-content input[type="color"] {
-        margin-left: 10px;
-    }
-    .button-label {
-        position: relative;
-        display: inline-block;
-        cursor: pointer;
-        background-color: #007BFF;
-        color: white;
-        padding: 5px 10px;
-        border: none;
-        border-radius: 5px;
-        transition: background-color 0.3s ease;
-        margin-left: 5px;
-        text-align: center;
-    }
-    .button-label:hover {
-        background-color: #0069d9;
-    } 
-    .button-label input[type="color"] {
-        display: none;
-    }
-    .modal-content {
-        background: #555555;
-        padding: 10px;
-        border-radius: 10px;
-        width: 30%;
-        max-width: 600px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    .settings-group {
-        margin-bottom: 20px;
-        border: 1px solid #888;
-        padding: 15px;
-        border-radius: 5px;
-    }
-    .settings-group h4 {
-        margin-top: 0;
-        margin-bottom: 15px;
-        color: #CCCCCC;
-    }
-    .color-picker-container {
-        display: flex;
-        align-items: center;
-        margin-bottom: 10px;
-    }
-    .color-picker-container label {
-        flex: 1;
-        margin-right: 10px;
-    }
-    .color-picker-container input[type="color"] {
-        width: 40px;
-        height: 40px;
-        padding: 0;
-        border: none;
-        border-radius: 50%;
-        cursor: pointer;
-    }
-    .color-preview {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        margin-left: 10px;
-        border: 1px solid #888;
-    }
-    .button-group {
-        display: flex;
-        justify-content: flex-end;
-        margin-top: 20px;
-    }
-    .button-group button {
-        margin-left: 10px;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
-    #close-bg-settings {
-        background-color: #2196F3;
-        color: white;
-    }
-    .button-group button:hover {
-        opacity: 0.9;
-    }
-    #bg-settings-modal {
-        display: none;
-    }
-    #delete-all-notes:hover {
-        background-color: #e53935;
-    }
-    .saved-schedules-container {
-        position: relative;
-    }
-    .saved-schedules-button {
-        background-color: #007BFF;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-    .saved-schedules-button:hover {
-        background-color: #0069d9;
-    }
-    .saved-schedules-dropdown {
-        display: none;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        width: 300px;
-        max-height: 400px;
-        overflow-y: auto;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        padding: 10px;
-        z-index: 1000;
-    }
-    .saved-schedules-dropdown h3 {
-        text-align: center;
-        color: white;
-    }
-    .saved-schedule-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background-color: #555555;
-        margin: 5px 0;
-        padding: 5px;
-        border-radius: 4px;
-        color: white;
-        cursor: pointer;
-    }
-    .delete-saved-schedule {
-        background-color: red;
-        border: none;
-        color: white;
-        border-radius: 4px;
-        cursor: pointer;
-        padding: 2px 5px;
-    }
+        .work-day {
+            background-color: #7C7C7C;
+            border: 2px solid #000;
+        }
+        .month-title {
+            grid-column: span 7;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .day-off {
+            background-color: #7C7C7C;
+        }
+        .today {
+            border: 2px solid red;
+            font-weight: bold;
+        }
+        .schedule-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+        .schedule-item select,
+        .schedule-item input {
+            margin-left: 10px;
+        }
+        .remove-item {
+            margin-left: 10px;
+            color: red;
+            cursor: pointer;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .stats-table {
+            width: 80%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            text-align: center;
+            background-color: #3A3A3A;
+        }
+        .stats-table th,
+        .stats-table td {
+            border: 2px solid #666;
+            padding: 3px;
+        }
+        .color-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            margin: 5px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .color-button:hover {
+            transform: scale(1.1);
+        }
+        #toggle-stats {
+            background-color: #73BF3E;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .highlight {
+            color: red;
+        }
+        .month-tools {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            z-index: 10;
+            display: flex;
+        }
+        .month-tools button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            padding: 0;
+            margin: 0 5px;
+        }
+        .notes-dropdown {
+            position: absolute;
+            top: 30px;
+            right: 5px;
+            background-color: #333333;
+            border: 1px solid #666;
+            border-radius: 4px;
+            padding: 10px;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+            width: 250px;
+        }
+        .notes-dropdown textarea {
+            width: 100%;
+            margin-bottom: 10px;
+            resize: vertical;
+        }
+        .notes-dropdown button {
+            margin-right: 5px;
+        }
+        #calendar-bg-color {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+        }
+        .pin {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            color: red;
+            font-size: 12px;
+            display: none;
+            transform: translate(50%, -50%);
+        }
+        @media (max-width: 1200px) {
+            #calendar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 768px) {
+            #calendar {
+                grid-template-columns: 1fr;
+            }
+            .day,
+            .day-header {
+                width: 100%;
+                height: auto;
+            }
+            .month-number {
+                font-size: 0.8em;
+                color: #2C2C2C;
+                text-align: center;
+                margin-bottom: 5px;
+                font-weight: bold;
+                background-color: #2C2C2C;
+            }
+        }
+        /* مظهر صفحة جميع الملاحظات */
+        #all-notes-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        #all-notes-content {
+            background: #444444;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 1100px;
+            max-height: 90%;
+            overflow-y: auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+        .note-header {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 3fr;
+            gap: 10px;
+            align-items: center;
+            font-weight: bold;
+            border-bottom: 2px solid #666;
+            margin-bottom: 10px;
+            background: #555555;
+            padding: 10px;
+        }
+        .note-item {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 3fr;
+            gap: 10px;
+            align-items: center;
+            border-bottom: 1px solid #666;
+            padding: 10px;
+            transition: background-color 0.3s;
+        }
+        .note-item:hover {
+            background-color: #666666;
+        }
+        .note-item textarea {
+            width: 100%;
+            resize: vertical;
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #888;
+            font-size: 14px;
+            background-color: #555555;
+            color: #FFFFFF;
+        }
+        .note-actions {
+            text-align: right;
+            display: flex;
+            justify-content: space-around;
+        }
+        .note-actions button {
+            padding: 5px 10px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .note-actions .save-note {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .note-actions .save-note:hover {
+            background-color: #45a049;
+        }
+        .note-actions .delete-note {
+            background-color: #f44336;
+            color: white;
+        }
+        .note-actions .delete-note:hover {
+            background-color: #e53935;
+        }
+        #close-notes {
+            background-color: #f44336;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        #close-notes:hover {
+            background-color: #e53935;
+        }
+        #change-bg-color {
+            background-color: #007BFF;
+            color: white;
+            padding: 2px;
+            border: none;
+            border-radius: 1px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 2px;
+        }
+        #change-bg-color:hover {
+            background-color: #0069d9;
+        }
+        #color-picker {
+            display: none;
+        }
+        #generate-schedule {
+            background-color: #D32F2F;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        #generate-schedule:hover {
+            background-color: #B71C1C;
+       }
+        /* صندوق أحمر للموظف وتاريخ البدء */
+        .employee-info {
+            background-color: #D32F2F;
+            color: white;
+            padding: 10px;
+            margin-top: 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: #444444;
+            padding: 20px;
+            border-radius: 5px;
+            width: 80%;
+            max-width: 500px;
+            text-align: center;
+        }
+        .modal-content label {
+            display: block;
+            margin: 10px 0;
+            text-align: left;
+        }
+        .modal-content input[type="color"] {
+            margin-left: 10px;
+        }
+        .button-label {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            margin-left: 5px;
+            text-align: center;
+        }
+        .button-label:hover {
+            background-color: #0069d9;
+        } 
+        .button-label input[type="color"] {
+            display: none;
+        }
+        .modal-content {
+            background: #555555;
+            padding: 10px;
+            border-radius: 10px;
+            width: 30%;
+            max-width: 600px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .settings-group {
+            margin-bottom: 20px;
+            border: 1px solid #888;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .settings-group h4 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #CCCCCC;
+        }
+        .color-picker-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .color-picker-container label {
+            flex: 1;
+            margin-right: 10px;
+        }
+        .color-picker-container input[type="color"] {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .color-preview {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-left: 10px;
+            border: 1px solid #888;
+        }
+        .button-group {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        .button-group button {
+            margin-left: 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #reset-colors {
+            background-color: #f44336;
+            color: white;
+        }
+        #close-bg-settings {
+            background-color: #2196F3;
+            color: white;
+        }
+        .button-group button:hover {
+            opacity: 0.9;
+        }
+        #bg-settings-modal {
+            display: none;
+        }
+        #delete-all-notes:hover {
+            background-color: #e53935;
+        }
+        .saved-schedules-container {
+            position: relative;
+        }
+        .saved-schedules-button {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .saved-schedules-button:hover {
+            background-color: #0069d9;
+        }
+        .saved-schedules-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            z-index: 1000;
+        }
+        .saved-schedules-dropdown h3 {
+            text-align: center;
+            color: white;
+        }
+        .saved-schedule-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #555555;
+            margin: 5px 0;
+            padding: 5px;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+        }
+        .delete-saved-schedule {
+            background-color: red;
+            border: none;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            padding: 2px 5px;
+        }
 
-    /* Styles for the modal */
-    .modal {
-        display: none;
-        position: fixed;
-        z-index: 1001;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-        background-color: rgba(0, 0, 0, 0.5);
-        justify-content: center;
-        align-items: center;
-    }
-    .modal-content {
-        background-color: #fefefe;
-        margin: auto;
-        padding: 20px;
-        border: 1px solid #888;
-        width: 80%;
-        max-width: 400px;
-        border-radius: 10px;
-        text-align: center;
-    }
-    .modal-content input {
-        margin: 10px 0;
-        padding: 10px;
-        width: 100%;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-    }
-    .modal-content button {
-        background-color: #4CAF50;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-    .modal-content button:hover {
-        background-color: #45a049;
-    }
-    .notes-dropdown .close-notes {
-        position: absolute;
-        top: 1px;
-        right: 1px;
-        background-color: #f44336;
-        color: white;
-        border: none;
-        border-radius: 20%;
-        cursor: pointer;
-        width: 5px;
-        height: 1px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .notes-dropdown .close-notes:hover {
-        background-color: #d32f2f;
-    }
-</style>
-
+        /* Styles for the modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 400px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .modal-content input {
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .modal-content button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .modal-content button:hover {
+            background-color: #45a049;
+        }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.5/dist/html2canvas.min.js" async></script>
 </head>
 <body>
     <div class="saved-schedules-container">
-        <button class="saved-schedules-button">💾عرض السجلات المحفوظة</button>
+        <button class="saved-schedules-button">عرض السجلات المحفوظة</button>
         <div class="saved-schedules-dropdown" id="saved-schedules-dropdown">
             <h3>السجلات المحفوظة</h3>
             <div id="saved-schedules-list"></div>
@@ -652,7 +636,7 @@
         <div id="current-date"></div>
         <h2>جدول العمل</h2>
         <button id="show-all-notes">📝✏️عرض جميع الملاحظات المحفوظة</button>
-        <button id="open-bg-settings">🖼️تغيير خلفيات الصفحة</button>
+        <button id="open-bg-settings">تغيير خلفيات الصفحة</button>
         <div id="bg-settings-modal" class="modal">
             <div class="modal-content">
                 <h3>إعدادات الخلفيات</h3>
@@ -700,8 +684,8 @@
         <div id="schedule-items">
             <div class="schedule-item">
                 <select class="day-type">
-                    <option value="work">أيام العمل👷🏼</option>
-                    <option value="off">أيام العطلة🏖️</option>
+                    <option value="work">أيام العمل</option>
+                    <option value="off">أيام العطلة</option>
                 </select>
                 <input type="number" class="days-count" value="1" min="1" max="99">
                 <input type="color" class="day-color" value="#68f296">
@@ -709,15 +693,15 @@
             </div>
             <div class="schedule-item">
                 <select class="day-type">
-                    <option value="work">أيام العمل👷🏼</option>
-                    <option value="off" selected>أيام العطلة🏖️</option>
+                    <option value="work">أيام العمل</option>
+                    <option value="off" selected>أيام العطلة</option>
                 </select>
                 <input type="number" class="days-count" value="3" min="1" max="99">
                 <input type="color" class="day-color" value="#e1f7e9">
                 <span class="remove-item">X</span>
             </div>
         </div>
-        <button id="add-schedule-item">➕إضافة يوم عمل او عطلة</button>
+        <button id="add-schedule-item">إضافة يوم عمل او عطلة</button>
 
         <div class="calendar-control">
             <label for="month-count">حدد عدد الأشهر:</label>
@@ -762,24 +746,13 @@
             </select>
             <label for="start-date">تاريخ اول يوم عمل:</label>
             <input type="date" id="start-date">
-            <button id="generate-schedule">📅إنشاء الجدول</button>
+            <button id="generate-schedule">إنشاء الجدول</button>
         </div>
 
-        <button id="toggle-stats">📃إخفاء/إظهار جدول الإحصائيات</button>
-        <button id="save-schedule">📸حفظ الصفحة كصورة</button>
-        <div id="reset-modal" class="modal">
-            <div class="modal-content">
-                <h3>إعدادات تهيئة الصفحة</h3>
-                <button id="delete-all-pins">📌 حذف جميع الدبابيس</button>
-                <button id="delete-all-records">💾 حذف السجل بالكامل</button>
-                <button id="reset-start-date">📅 إعادة تهيئة تاريخ البدء</button>
-                <button id="reset-all">🔄 إعادة الصفحة بالكامل لوضعها الافتراضي</button>
-                <button id="close-reset-modal">❌ إغلاق</button>
-            </div>
-        </div>
-
+        <button id="toggle-stats">إخفاء/إظهار جدول الإحصائيات</button>
+        <button id="save-schedule">حفظ الصفحة كصورة</button>
         <button id="reset-page">❌تهيئة الصفحة❌</button>
-        <button id="save-schedule-data">💾حفظ الجدول بالسجل</button>
+        <button id="save-schedule-data">حفظ الجدول بالسجل</button>
         <table class="stats-table" id="stats-table">
             <thead>
                 <tr>
@@ -817,15 +790,6 @@
             <button id="save-schedule-confirm">حفظ</button>
         </div>
     </div>
-
-    <div class="notes-dropdown">
-        <button class="close-notes">X</button>
-        <textarea placeholder="أدخل ملاحظاتك هنا"></textarea>
-        <button class="save-notes">حفظ</button>
-        <button class="edit-notes">تعديل</button>
-        <button class="delete-notes">حذف</button>
-    </div>
-
 
     <script>
         document.getElementById('add-schedule-item').addEventListener('click', function () {
@@ -1372,6 +1336,15 @@
             }
         }
 
+        document.getElementById('reset-page').addEventListener('click', function() {
+            const savedSchedules = JSON.parse(localStorage.getItem('savedSchedules')) || [];
+            const backgroundSettings = JSON.parse(localStorage.getItem('backgroundSettings')) || {};
+            localStorage.clear();
+            localStorage.setItem('savedSchedules', JSON.stringify(savedSchedules)); // استثناء سجل المحفوظات
+            localStorage.setItem('backgroundSettings', JSON.stringify(backgroundSettings)); // استثناء إعدادات الخلفية
+            resetBackgrounds();
+            location.reload();
+        });
 
         document.getElementById('show-all-notes').addEventListener('click', function () {
             const notesList = document.getElementById('notes-list');
@@ -1630,83 +1603,6 @@
             const dropdown = document.getElementById('saved-schedules-dropdown');
             dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
         });
-      
-              document.getElementById('reset-page').addEventListener('click', function() {
-            document.getElementById('reset-modal').style.display = 'flex';
-        });
-
-        document.getElementById('close-reset-modal').addEventListener('click', function() {
-            document.getElementById('reset-modal').style.display = 'none';
-        });
-
-        document.getElementById('delete-all-pins').addEventListener('click', function() {
-            if (confirm('هل أنت متأكد من حذف جميع الدبابيس؟')) {
-                localStorage.removeItem('pinnedDays');
-                document.querySelectorAll('.pin').forEach(pin => {
-                    pin.style.display = 'none';
-                });
-                alert('تم حذف جميع الدبابيس');
-            }
-        });
-
-        document.getElementById('delete-all-records').addEventListener('click', function() {
-            if (confirm('هل أنت متأكد من حذف السجل بالكامل؟')) {
-                localStorage.removeItem('savedSchedules');
-                alert('تم حذف السجل بالكامل');
-            }
-        });
-
-        document.getElementById('reset-start-date').addEventListener('click', function() {
-            document.getElementById('start-date').value = '';
-            alert('تم إعادة تهيئة تاريخ البدء');
-        });
-
-        document.getElementById('reset-all').addEventListener('click', function() {
-            if (confirm('هل أنت متأكد من إعادة الصفحة بالكامل لوضعها الافتراضي؟')) {
-                localStorage.clear();
-                location.reload();
-            }
-        });
-      
-      document.addEventListener('DOMContentLoaded', function() {
-    // تحميل الإعدادات المحفوظة من التخزين المحلي
-    const bodyBgColor = localStorage.getItem('bodyBgColor') || '#BBBCB8';
-    const statsTableBgColor = localStorage.getItem('statsTableBgColor') || '#8D8D8B';
-    const monthBgColor = localStorage.getItem('monthBgColor') || '#444444';
-
-    document.documentElement.style.setProperty('--body-bg-color', bodyBgColor);
-    document.documentElement.style.setProperty('--stats-table-bg-color', statsTableBgColor);
-    document.documentElement.style.setProperty('--month-bg-color', monthBgColor);
-
-    // تحميل الجدول والبيانات المحفوظة
-    loadScheduleFromLocal();
-
-    // تحميل الخلفيات المحفوظة
-    loadBackgroundSettings();
-
-    // تحميل الملاحظات المحفوظة
-    loadNotesFromLocal();
-
-    // تحميل الدبابيس المحفوظة
-    loadPinsFromLocal();
-
-    // إعداد الأحداث الخاصة بحفظ الخلفيات
-    document.getElementById('page-bg-color-picker').addEventListener('input', function() {
-        document.documentElement.style.setProperty('--body-bg-color', this.value);
-        localStorage.setItem('bodyBgColor', this.value);
-    });
-
-    document.getElementById('stats-table-bg-color-picker').addEventListener('input', function() {
-        document.documentElement.style.setProperty('--stats-table-bg-color', this.value);
-        localStorage.setItem('statsTableBgColor', this.value);
-    });
-
-    document.getElementById('month-bg-color-picker').addEventListener('input', function() {
-        document.documentElement.style.setProperty('--month-bg-color', this.value);
-        localStorage.setItem('monthBgColor', this.value);
-    });
-});
-
     </script>
 </body>
 </html>
