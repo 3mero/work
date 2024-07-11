@@ -983,25 +983,17 @@
             localStorage.setItem('workSchedule', JSON.stringify(scheduleData));
         }
 
-        function saveBackgroundSettings() {
-            const workCalendarBg = document.getElementById('work-calendar-bg-color-picker').value;
-            const statsTableBg = document.getElementById('stats-table-bg-color-picker').value;
-            const pageBg = document.getElementById('page-bg-color-picker').value;
-            const shiftScheduleBg = document.getElementById('shift-schedule-bg-color-picker').value;
-            const monthBg = document.getElementById('month-bg-color-picker').value;
-            const allNotesBg = document.getElementById('color-picker').value;
-
-            const backgroundSettings = {
-                workCalendarBg: workCalendarBg,
-                statsTableBg: statsTableBg,
-                pageBg: pageBg,
-                shiftScheduleBg: shiftScheduleBg,
-                monthBg: monthBg,
-                allNotesBg: allNotesBg
-            };
-
-            localStorage.setItem('backgroundSettings', JSON.stringify(backgroundSettings));
-        }
+function saveBackgroundSettings() {
+    const backgroundSettings = {
+        pageBg: document.body.style.backgroundColor,
+        shiftScheduleBg: document.querySelector('.shift-schedule').style.backgroundColor,
+        statsTableBg: document.getElementById('stats-table').style.backgroundColor,
+        workCalendarBg: document.querySelector('.work-calendar').style.backgroundColor,
+        monthBg: document.querySelector('.month').style.backgroundColor,
+        allNotesBg: document.getElementById('all-notes-content').style.backgroundColor
+    };
+    localStorage.setItem('backgroundSettings', JSON.stringify(backgroundSettings));
+}
 
         function saveNotes() {
             const notes = {};
@@ -1093,11 +1085,73 @@
                 }
             }
         }
+      
+      function loadBackgroundSettings() {
+    const savedBackgroundSettings = localStorage.getItem('backgroundSettings');
+    if (savedBackgroundSettings) {
+        const backgroundSettings = JSON.parse(savedBackgroundSettings);
+
+        // تطبيق الخلفيات على العناصر
+        document.body.style.backgroundColor = backgroundSettings.pageBg || '#2C2C2C';
+        document.querySelector('.shift-schedule').style.backgroundColor = backgroundSettings.shiftScheduleBg || '#3A3A3A';
+        document.getElementById('stats-table').style.backgroundColor = backgroundSettings.statsTableBg || '#3A3A3A';
+        document.querySelector('.work-calendar').style.backgroundColor = backgroundSettings.workCalendarBg || '#3A3A3A';
+        
+        // تطبيق خلفية الأشهر
+        document.querySelectorAll('.month').forEach(month => {
+            month.style.backgroundColor = backgroundSettings.monthBg || '#444444';
+        });
+
+        // تطبيق خلفية قائمة الملاحظات
+        document.getElementById('all-notes-content').style.backgroundColor = backgroundSettings.allNotesBg || '#444444';
+
+        // تحديث قيم مختارات الألوان
+        document.getElementById('page-bg-color-picker').value = backgroundSettings.pageBg || '#2C2C2C';
+        document.getElementById('shift-schedule-bg-color-picker').value = backgroundSettings.shiftScheduleBg || '#3A3A3A';
+        document.getElementById('stats-table-bg-color-picker').value = backgroundSettings.statsTableBg || '#3A3A3A';
+        document.getElementById('work-calendar-bg-color-picker').value = backgroundSettings.workCalendarBg || '#3A3A3A';
+        document.getElementById('month-bg-color-picker').value = backgroundSettings.monthBg || '#444444';
+        document.getElementById('color-picker').value = backgroundSettings.allNotesBg || '#444444';
+    }
+}
+      
+      // مثال: عند تغيير لون خلفية الصفحة
+document.getElementById('page-bg-color-picker').addEventListener('input', function() {
+    document.body.style.backgroundColor = this.value;
+    saveBackgroundSettings();
+});
+      
+      document.getElementById('shift-schedule-bg-color-picker').addEventListener('input', function() {
+    document.body.style.backgroundColor = this.value;
+    saveBackgroundSettings();
+});
+      
+      document.getElementById('stats-table-bg-color-picker').addEventListener('input', function() {
+    document.body.style.backgroundColor = this.value;
+    saveBackgroundSettings();
+});
+      
+      document.getElementById('work-calendar-bg-color-picker').addEventListener('input', function() {
+    document.body.style.backgroundColor = this.value;
+    saveBackgroundSettings();
+});
+      
+            document.getElementById('month-bg-color-picker').addEventListener('input', function() {
+    document.body.style.backgroundColor = this.value;
+    saveBackgroundSettings();
+});
+      
+                  document.getElementById('color-picker').addEventListener('input', function() {
+    document.body.style.backgroundColor = this.value;
+    saveBackgroundSettings();
+});
 
         window.addEventListener('load', function() {
             loadScheduleFromLocal();
+            loadBackgroundSettings();
             loadNotesFromLocal();
             loadPinsFromLocal();
+            loadFontColor();
         });
 
         function savePinsToLocal() {
