@@ -504,18 +504,6 @@
         .saved-schedules-container {
             position: relative;
         }
-        .saved-schedules-button {
-            background-color: #007BFF;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .saved-schedules-button:hover {
-            background-color: #0069d9;
-        }
         .saved-schedules-dropdown {
             display: none;
             position: absolute;
@@ -600,14 +588,6 @@
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.5/dist/html2canvas.min.js" async></script>
 </head>
 <body>
-    <div class="saved-schedules-container">
-        <button class="saved-schedules-button">عرض السجلات المحفوظة</button>
-        <div class="saved-schedules-dropdown" id="saved-schedules-dropdown">
-            <h3>السجلات المحفوظة</h3>
-            <div id="saved-schedules-list"></div>
-        </div>
-    </div>
-
     <div id="employee-info" class="employee-info" style="display: none;">
         <p id="employee-name"></p>
         <p id="employee-start-date"></p>
@@ -752,7 +732,6 @@
         <button id="toggle-stats">إخفاء/إظهار جدول الإحصائيات</button>
         <button id="save-schedule">حفظ الصفحة كصورة</button>
         <button id="reset-page">❌تهيئة الصفحة❌</button>
-        <button id="save-schedule-data">حفظ الجدول بالسجل</button>
         <table class="stats-table" id="stats-table">
             <thead>
                 <tr>
@@ -1485,10 +1464,6 @@
             }
         });
 
-        document.getElementById('save-schedule-data').addEventListener('click', function () {
-            const saveModal = document.getElementById('save-modal');
-            saveModal.style.display = 'flex';
-        });
 
         document.getElementById('save-schedule-confirm').addEventListener('click', function () {
             const scheduleName = document.getElementById('schedule-name').value.trim();
@@ -1583,14 +1558,6 @@
             });
         }
 
-        window.addEventListener('click', function (e) {
-            if (!e.target.matches('.saved-schedules-button')) {
-                const dropdown = document.getElementById('saved-schedules-dropdown');
-                if (dropdown.style.display === 'block') {
-                    dropdown.style.display = 'none';
-                }
-            }
-        });
 
         window.addEventListener('click', function (e) {
             const saveModal = document.getElementById('save-modal');
@@ -1599,10 +1566,6 @@
             }
         });
 
-        document.querySelector('.saved-schedules-button').addEventListener('click', function () {
-            const dropdown = document.getElementById('saved-schedules-dropdown');
-            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
-        });
     </script>
 </body>
 </html>
