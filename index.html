@@ -1247,8 +1247,9 @@ window.addEventListener('load', function() {
     loadBackgroundSettings();
     loadNotesFromLocal();
     loadPinsFromLocal();
+    loadMonthBackgrounds();
+    initializeBackgroundChangeListeners();
 });
-      
 
         document.getElementById('page-bg-color-picker').addEventListener('input', function() {
             document.body.style.backgroundColor = this.value;
@@ -1288,6 +1289,8 @@ window.addEventListener('load', function() {
             loadBackgroundSettings();
             loadNotesFromLocal();
             loadPinsFromLocal();
+            MonthBackground();
+            saveMonthBackground();
         });
 
         function savePinsToLocal() {
@@ -1540,6 +1543,7 @@ window.addEventListener('load', function() {
                 loadNotesFromLocal();
                 loadPinsFromLocal();
                 applyMonthBackgrounds();
+                saveMonthBackground();
 
                 // عرض اسم السجل وتاريخ أول يوم عمل أعلى الشاشة
                 document.getElementById('employee-name').textContent = `اسم السجل: ${schedule.name}`;
@@ -1574,6 +1578,34 @@ window.addEventListener('load', function() {
             }
         });
 
+      function initializeBackgroundChangeListeners() {
+        document.querySelectorAll('.change-bg').forEach(input => {
+            input.addEventListener('input', function() {
+                const monthTitle = this.closest('.month').querySelector('.month-title').textContent;
+                const newColor = this.value;
+                this.closest('.month').style.backgroundColor = newColor;
+                saveMonthBackground(monthTitle, newColor);
+            });
+        });
+    }
+
+function saveMonthBackground(monthTitle, color) {
+    const savedBackgrounds = JSON.parse(localStorage.getItem('monthBackgrounds')) || {};
+    savedBackgrounds[monthTitle] = color;
+    localStorage.setItem('monthBackgrounds', JSON.stringify(savedBackgrounds));
+}
+
+
+function loadMonthBackgrounds() {
+    const savedBackgrounds = JSON.parse(localStorage.getItem('monthBackgrounds')) || {};
+    document.querySelectorAll('.month').forEach(monthDiv => {
+        const monthTitle = monthDiv.querySelector('.month-title').textContent;
+        if (savedBackgrounds[monthTitle]) {
+            monthDiv.style.backgroundColor = savedBackgrounds[monthTitle];
+            monthDiv.querySelector('.change-bg').value = savedBackgrounds[monthTitle];
+        }
+    });
+}
     </script>
 </body>
 </html>
