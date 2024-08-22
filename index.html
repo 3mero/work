@@ -1031,7 +1031,7 @@
 
         function updateCurrentDate() {
             const now = new Date();
-            const formattedDate = now.toLocaleDateString('ar-MA', {
+            const formattedDate = now.toLocaleDateString('ar-LY', {
                 weekday: 'long',
                 year: 'numeric',
                 month: 'long',
@@ -1494,7 +1494,7 @@ window.addEventListener('load', function() {
                 name: `${scheduleName} - ${startDate}`, // احفظ الاسم مع تاريخ أول يوم بدء العمل
                 data: scheduleData,
                 startDate: startDate,
-                createdDate: new Date().toLocaleString('ar-MA')
+                createdDate: new Date().toLocaleString('ar-LY')
             };
             savedSchedules.push(scheduleRecord);
             localStorage.setItem('savedSchedules', JSON.stringify(savedSchedules));
